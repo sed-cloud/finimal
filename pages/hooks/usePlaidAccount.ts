@@ -12,7 +12,7 @@ export function usePlaidAccount(): ReturnValue {
 
 
     async function getAccounts() {
-        let response = await fetch(`/api/accounts/${accessToken}`);
+        let response = await fetch(`/api/plaid/accounts/${accessToken}`);
         const { accounts } = await response.json()
         setAccounts(accounts)
     }

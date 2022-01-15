@@ -15,7 +15,7 @@ export function usePlaidAccessToken(public_token: string | null): ReturnValue {
 
     // helper function to perform the token exchange 
     async function exchangePublicToken() {
-        let response = await fetch(`/api/exchange_public_token/${publicToken}`)
+        let response = await fetch(`/api/plaid/exchange_public_token/${publicToken}`)
         const { access_token } = await response.json()
         setAccessToken(access_token)
     }

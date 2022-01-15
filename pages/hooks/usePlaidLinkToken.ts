@@ -9,7 +9,7 @@ export function usePlaidLinkToken(): ReturnValue {
     const [linkToken, setLinkToken] = useState<string | null>(null)
 
     async function createLinkToken() {
-        let response = await fetch("/api/create_link_token");
+        let response = await fetch("/api/plaid/create_link_token");
         const { link_token } = await response.json();
         setLinkToken(link_token);
     }
