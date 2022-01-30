@@ -1,13 +1,17 @@
-import type { NextPage } from 'next'
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useAuth } from "../contexts/auth";
+import { CustomPage } from '../lib/custom-page';
 
-const Landing: NextPage = () => {
-  const [username, setUsername] = useState('')
+const Landing: CustomPage = () => {
   const [password, setPassword] = useState('')
+  const router = useRouter()
+  const { authenticate } = useAuth()
 
-
-  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault()
+    await authenticate(password)
+    router.push('/home')
   }
 
   return (
@@ -15,36 +19,18 @@ const Landing: NextPage = () => {
       <h1 className='text-5xl font-bold font-["Poppins"] mb-32'>Personal Finance Application</h1>
       <div>
         <form onSubmit={onSubmit} className='grid place-items-start w-72'>
-          {/* username field */}
-          <label className="p-2 font-bold font-['Poppins'] text-xl">username</label>
-          <input className="
-            rounded-xl
-            border-stone-200
-            border-2
-            p-2
-            font-['Poppins']
-            mb-2
-            text-md
-            w-full
-          "
-            type='text'
-            name='username'
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          ></input>
-
           {/* password field */}
-          <label className="p-2 font-bold font-['Poppins'] text-xl">password</label>
-          <input className='
+          <label className="p-2 font-bold font-['Poppins'] text-xl text-center w-full">password</label>
+          <input className={`
             rounded-xl
-            border-stone-200
             border-2 
             p-2
             font-["Poppins"]
             mb-2
             text-md
             w-full
-          '
+            border-stone-200
+            `}
             type='password'
             name='password'
             value={password}
@@ -89,5 +75,8 @@ const Landing: NextPage = () => {
     </div>
   );
 }
+
+Landing.requiresAuth = false
+Landing.redirectAuthenticatedTo = '/home'
 
 export default Landing
