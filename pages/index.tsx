@@ -15,20 +15,21 @@ const Landing: CustomPage = () => {
   }
 
   return (
-    <div className='grid place-items-center h-screen content-center'>
-      <h1 className='text-5xl font-bold font-["Poppins"] mb-32'>Personal Finance Application</h1>
+    <div className='grid place-items-center h-screen content-center '>
       <div>
-        <form onSubmit={onSubmit} className='grid place-items-start w-72'>
+        <form onSubmit={onSubmit} className='grid place-items-start w-72 shadow-lg p-8 bg-stone-50'>
+          <h1 className='text-5xl font-bold font-["Poppins"] mb-2'>finimal</h1>
+          <h1 className='text-sm text-stone-400 font-["Poppins"] mb-4'>The premier personal finance terminal</h1>
           {/* password field */}
-          <label className="p-2 font-bold font-['Poppins'] text-xl text-center w-full">password</label>
+          <label className="py-2 font-bold font-['Poppins'] text-xl w-full">token</label>
           <input className={`
-            rounded-xl
             border-2 
             p-2
             font-["Poppins"]
-            mb-2
+            mb-4
             text-md
             w-full
+            rounded-xl
             border-stone-200
             `}
             type='password'
@@ -39,32 +40,21 @@ const Landing: CustomPage = () => {
 
           {/* login button */}
           <input className='
-            transition-all 
-            ease-in-out 
+            transition-all
+            ease-in-out
             durration-300
 
-            rounded-3xl
-            border-cyan-600
-            border-2
-            px-8
+            bg-stone-200
+            text-stone-900
+            px-4
             py-2
-            font-bold
             font-["Poppins"]
-            bg-cyan-600
-            text-cyan-50
-            my-4
+            font-bold
+            rounded-xl
             w-full
-            text-xl
 
-            hover:bg-cyan-700
-            hover:border-cyan-700
-            hover:rounded-xl
-
-            active:bg-cyan-500
-            active:border-cyan-500
-            active:rounded-md
-
-
+            hover:bg-cyan-600
+            hover:text-red-50
           '
             type='submit'
             value='login'

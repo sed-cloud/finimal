@@ -18,8 +18,25 @@ export const PlaidLink: FunctionComponent<Props> = ({ token, onSuccess }) => {
     const { open, ready, error } = usePlaidLink(config);
 
     return (
-        <button onClick={() => { console.log('test'); open() }} disabled={!ready}>
-            Connect a bank account
+        <button
+            className='
+            transition-all
+            ease-in-out
+            durration-300
+
+            bg-stone-200
+            text-stone-900
+            px-4
+            py-2
+            font-["Poppins"]
+            font-bold
+            rounded-xl
+
+            hover:bg-violet-600
+            hover:text-red-50
+            '
+            onClick={() => { open() }} disabled={!ready}>
+            Add Account
         </button>
     );
 };
