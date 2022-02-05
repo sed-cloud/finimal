@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CustomPage } from '../lib/custom-page';
-import { Field } from "./components/Field";
-import { NavigationBar } from "./components/NavigationBar";
+import { Field } from "../components/Field";
+import { NavigationBar } from "../components/NavigationBar";
 import { usePlaid } from "../contexts/plaid";
 
 
@@ -59,9 +59,9 @@ const Home: CustomPage = () => {
             </div>
 
             <div className='m-4 grid grid-flow-row-dense grid-cols-4'>
-                {accounts.map((value) => {
+                {accounts.map((value, index) => {
                     return (
-                        <div className="m-4 justify-start max-w-md">
+                        <div key={index} className="m-4 justify-start max-w-md">
                             <div className="p-6 shadow-lg rounded-lg bg-white">
                                 <div className="flex flex-row h-12">
                                     <h1 className='text-stone-900 font-["Poppins"] text-2xl font-extrabold flex-1'>{value.name}</h1>

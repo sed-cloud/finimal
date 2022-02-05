@@ -3,8 +3,8 @@ import { AccountBase } from 'plaid';
 import React, { useContext, useEffect, useState } from 'react'
 import { PlaidLinkOnSuccess } from 'react-plaid-link';
 import { CustomAppProps, CustomPage } from '../lib/custom-page';
-import { PlaidLink } from '../pages/components/plaid-link';
-import { usePlaidLinkToken } from '../pages/hooks/usePlaidLinkToken';
+import { PlaidLink } from '../components/plaid-link';
+import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
 
 
 type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }

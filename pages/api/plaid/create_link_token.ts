@@ -3,16 +3,16 @@ import { Configuration, CountryCode, PlaidApi, PlaidEnvironments, Products } fro
 
 
 
-if (!process.env.TIER) { throw new Error('Unable to load Plaid tier') }
-if (!process.env[`PLAID_CLIENT_ID_${process.env.TIER}`]) { throw new Error('Unable to load Plaid client id') }
-if (!process.env[`PLAID_SECRET_${process.env.TIER}`]) { throw new Error('Unable to load Plaid secret')}
+if (!process.env.FINIMAL_TIER) { throw new Error('Unable to load Plaid tier') }
+if (!process.env[`PLAID_CLIENT_ID_${process.env.FINIMAL_TIER}`]) { throw new Error('Unable to load Plaid client id') }
+if (!process.env[`PLAID_SECRET_${process.env.FINIMAL_TIER}`]) { throw new Error('Unable to load Plaid secret')}
 
 const configuration = new Configuration({
-    basePath: PlaidEnvironments[process.env.TIER.toLowerCase()],
+    basePath: PlaidEnvironments[process.env.FINIMAL_TIER.toLowerCase()],
     baseOptions: {
         headers: {
-            'PLAID-CLIENT-ID': process.env[`PLAID_CLIENT_ID_${process.env.TIER}`],
-            'PLAID-SECRET': process.env[`PLAID_SECRET_${process.env.TIER}`],
+            'PLAID-CLIENT-ID': process.env[`PLAID_CLIENT_ID_${process.env.FINIMAL_TIER}`],
+            'PLAID-SECRET': process.env[`PLAID_SECRET_${process.env.FINIMAL_TIER}`],
         },
     },
 });
