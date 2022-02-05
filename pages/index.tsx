@@ -1,36 +1,47 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useAuth } from "../contexts/auth";
+import { useNotification } from "../contexts/notification";
 import { CustomPage } from '../lib/custom-page';
+
 
 const Landing: CustomPage = () => {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const { authenticate } = useAuth()
+  const { showNotification } = useNotification()
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault()
-    await authenticate(password)
-    router.push('/home')
+    authenticate(password).then((result) => {
+      if (result) {
+        router.push('/home')
+      } else {
+        showNotification('Invalid Entry Token Provided')
+      }
+    })
   }
 
   return (
     <div className='grid place-items-center h-screen content-center '>
       <div>
-        <form onSubmit={onSubmit} className='grid place-items-start w-72 shadow-lg p-8 bg-stone-50'>
+        <form onSubmit={onSubmit} className='grid place-items-start w-72 shadow-lg p-8 bg-white rounded-lg'>
           <h1 className='text-5xl font-bold font-["Poppins"] mb-2'>finimal</h1>
-          <h1 className='text-sm text-stone-400 font-["Poppins"] mb-4'>The premier personal finance terminal</h1>
+          <h1 className='text-sm text-stone-400 font-["Poppins"] mb-4'>the personal finance terminal designed to minimize your finances</h1>
           {/* password field */}
           <label className="py-2 font-bold font-['Poppins'] text-xl w-full">token</label>
           <input className={`
-            border-2 
+            border-stone-200
             p-2
             font-["Poppins"]
             mb-4
             text-md
             w-full
             rounded-xl
-            border-stone-200
+            border-2
+
+            focus:border-stone-700
+            focus:outline-none
             `}
             type='password'
             name='password'
@@ -62,6 +73,9 @@ const Landing: CustomPage = () => {
         </form>
         <div className='h-64'></div>
       </div>
+
+      
+
     </div>
   );
 }

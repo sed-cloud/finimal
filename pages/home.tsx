@@ -1,55 +1,59 @@
-import React from "react";
-import { useAuth } from "../contexts/auth";
+import React, { useEffect, useState } from "react";
 import { CustomPage } from '../lib/custom-page';
-import { usePlaid } from "./hooks/usePlaid";
+import { Field } from "./components/Field";
+import { NavigationBar } from "./components/NavigationBar";
+import { usePlaid } from "../contexts/plaid";
 
 
 const Home: CustomPage = () => {
-    const { logout } = useAuth()
-    const { PlaidLink, accounts } = usePlaid()
+    const { PlaidConnectionLink, nextConnectionName, accounts } = usePlaid()
+    const [totalBalance, setTotalBalance] = useState(0)
+    const [liquidBalance, setLiquidBalance] = useState(0)
 
-    let totalBalance = 0
-    accounts.forEach((value) => {
-        if (value.balances.current) {
-            if (value.type === 'loan') { totalBalance -= value.balances.current }
-            else { totalBalance += value.balances.current }
+    useEffect(() => {
+        if (accounts.length <= 0) {
+            setTotalBalance(0)
+            return
         }
-    })
+
+        let total = 0
+        let liquid = 0
+        accounts.forEach((value) => {
+            if (value.balances.current) {
+                if (value.type === 'loan') {
+                    total -= value.balances.current
+                }
+                else {
+                    total += value.balances.current
+                    if (value.balances.available) liquid += value.balances.available // only avaliable assets are considered liquid
+                }
+            }
+        })
+        setTotalBalance(total)
+        setLiquidBalance(liquid)
+    }, [accounts])
+
 
     return (
         <div className='m-4'>
-            <nav className='m-8 p-4 flex shadow-lg rounded-lg bg-stone-50'>
-                <a className='flex-1 text-stone-900 font-["Poppins"] text-4xl italic font-extrabold'>finimal</a>
-                <div className='w-8' />
-                <button className='
-                transition-all 
-                ease-in-out 
-                durration-300
-
-                bg-stone-200 
-                text-stone-900
-                px-4
-                py-2
-                font-["Poppins"]
-                font-bold
-                rounded-xl
-
-                hover:bg-pink-600
-                hover:text-pink-50
-                '
-                    onClick={() => logout('/')}>
-                    logout
-                </button>
-            </nav>
+            <NavigationBar />
 
             <div className="m-8">
-                <div className="p-6 shadow-lg rounded-lg bg-stone-50">
-                    <h1 className='text-stone-900 font-["Poppins"] text-2xl font-extrabold flex-1'>Dashboard</h1>
+                <div className="p-6 shadow-lg rounded-lg bg-white">
+                    <h1 className='text-stone-900 font-["Poppins"] text-2xl font-extrabold flex-1'>dashboard</h1>
                     <div className="h-4"></div>
 
-                    <p className={`${totalBalance >= 0 ? ' text-emerald-300' : 'text-red-300'} font-["Poppins"] font-bold text-lg`}>
-                        ${totalBalance.toLocaleString('en-US')}
-                    </p>
+                    <Field
+                        text={'Net Worth'}
+                        value={accounts.length === 0 ? '-' : totalBalance.toLocaleString('en-US')}
+                        valueColor={`${totalBalance > 0 ? ' text-emerald-300' : totalBalance === 0 ? 'text-stone-400' : 'text-red-300'}`}
+                    />
+
+                    <Field
+                        text={'Liquid Assets'}
+                        value={accounts.length === 0 ? '-' : liquidBalance.toLocaleString('en-US')}
+                        valueColor={`${liquidBalance > 0 ? ' text-emerald-300' : liquidBalance === 0 ? 'text-stone-400' : 'text-red-300'}`}
+                    />
 
                 </div>
             </div>
@@ -58,7 +62,7 @@ const Home: CustomPage = () => {
                 {accounts.map((value) => {
                     return (
                         <div className="m-4 justify-start max-w-md">
-                            <div className="p-6 shadow-lg rounded-lg bg-stone-50">
+                            <div className="p-6 shadow-lg rounded-lg bg-white">
                                 <div className="flex flex-row h-12">
                                     <h1 className='text-stone-900 font-["Poppins"] text-2xl font-extrabold flex-1'>{value.name}</h1>
                                     <div>
@@ -78,7 +82,7 @@ const Home: CustomPage = () => {
                                 <p className={`
                                 ${value.type === 'depository' ? ' text-emerald-300' : value.type === 'loan' ? 'text-red-300' : 'text-cyan-300'}
                                 font-["Poppins"] font-bold text-lg`}>
-                                    ${value.balances.current?.toLocaleString('en-US')}
+                                    {value.balances.current?.toLocaleString('en-US')}
                                 </p>
                                 <div className="h-2"></div>
                                 <p className='text-stone-400 font-["Poppins"] text-sm'>
@@ -116,7 +120,7 @@ const Home: CustomPage = () => {
                 })}
 
                 <div className="m-4 max-w-md">
-                    <div className="p-6 shadow-lg rounded-lg bg-stone-50">
+                    <div className="p-6 shadow-lg rounded-lg bg-white">
                         <h1 className='text-stone-900 font-["Poppins"] text-2xl font-extrabold flex-1'>Load Account</h1>
                         <div className="h-4"></div>
                         <p className='text-stone-400 font-["Poppins"] text-sm'>
@@ -124,7 +128,7 @@ const Home: CustomPage = () => {
                         </p>
                         <div className="h-8"></div>
                         <div className="flex flex-row-reverse">
-                            {PlaidLink}
+                            {PlaidConnectionLink(nextConnectionName())}
                         </div>
                     </div>
                 </div>

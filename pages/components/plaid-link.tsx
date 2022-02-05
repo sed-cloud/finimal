@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from "react-plaid-link";
 
 interface Props {
+    connectionName: string;
     token: string;
     onSuccess: PlaidLinkOnSuccess;
 }

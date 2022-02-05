@@ -1,12 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Configuration, CountryCode, PlaidApi, PlaidEnvironments, Products } from 'plaid';
 
+
+
+if (!process.env.TIER) { throw new Error('Unable to load Plaid tier') }
+if (!process.env[`PLAID_CLIENT_ID_${process.env.TIER}`]) { throw new Error('Unable to load Plaid client id') }
+if (!process.env[`PLAID_SECRET_${process.env.TIER}`]) { throw new Error('Unable to load Plaid secret')}
+
 const configuration = new Configuration({
-    basePath: PlaidEnvironments['sandbox'],
+    basePath: PlaidEnvironments[process.env.TIER.toLowerCase()],
     baseOptions: {
         headers: {
-            'PLAID-CLIENT-ID': '619eb3ff6f5cd0001aee8399',
-            'PLAID-SECRET': 'a828517f960ad28c66ed2ee24afe23',
+            'PLAID-CLIENT-ID': process.env[`PLAID_CLIENT_ID_${process.env.TIER}`],
+            'PLAID-SECRET': process.env[`PLAID_SECRET_${process.env.TIER}`],
         },
     },
 });

@@ -1,6 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+if (!process.env.ENTRY_TOKEN) { throw new Error ('Unable to load entry token')}
+
 type Data = {
     token: string
 }
@@ -12,7 +14,7 @@ export default function handler(
 
     const token = JSON.parse(req.body).token
 
-    if (token !== '' && token) {
+    if (token === process.env.ENTRY_TOKEN) {
         res.status(200).json({ token: token })
     } else {
         res.status(401)

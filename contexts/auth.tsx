@@ -9,7 +9,7 @@ type User = { token: string } | null
 const AuthContext = React.createContext(
     {} as {
         user: User;
-        authenticate: (newToken: string) => Promise<void>;
+        authenticate: (newToken: string) => Promise<boolean>;
         logout: (redirectLocation: string) => void;
         isLoading: boolean;
         isAuthenticated: boolean;
@@ -34,14 +34,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // unauthenticateAPI();
         setUser(null);
         setIsLoading(false);
-        console.log("Redirecting");
         router.push(redirectLocation || "/");
     };
 
     const authenticate = async (token: string) => {
         setIsLoading(true);
         // authenticateAPI(token);
-        await fetch('/api/authenticate', {
+        return await fetch('/api/authenticate', {
             method: 'POST',
             body: JSON.stringify({
                 token: token
@@ -49,16 +48,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }).then(response => {
             return response.json()
         }).then(responseJson => {
-            console.log(responseJson)
             setUser(responseJson);
             Cookies.set("token", token);
+            return true;
         }).catch(error => {
-            console.log({ error });
+            // console.log({ error });
             // unauthenticateAPI();
             setUser(null);
             Cookies.remove("token");
+            return false
+        }).finally(() => {
+            setIsLoading(false);
         })
-        setIsLoading(false);
     }
 
 
