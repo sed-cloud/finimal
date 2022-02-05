@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ] 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: sed-cloud/deploy@main
+          with:
+            repo-owner: ${{ github.event.repository.owner.login }}
+            repo-name: ${{ github.event.repository.name }}
+            repo-type: WEB
+            SED_CLOUD_HOST: ${{ secrets.SED_CLOUD_HOST }}
+            SED_CLOUD_USER: ${{ secrets.SED_CLOUD_USER }}
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
