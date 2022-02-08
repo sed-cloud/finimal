@@ -25,8 +25,8 @@ const Landing: CustomPage = () => {
   return (
     <div className='grid place-items-center h-screen content-center '>
       <div>
-        <form onSubmit={onSubmit} className='grid place-items-start w-72 shadow-lg p-8 bg-white rounded-lg'>
-          <h1 className='text-5xl font-bold font-["Poppins"] mb-2'>finimal</h1>
+        <form onSubmit={onSubmit} className='grid place-items-start w-80 shadow-lg p-8 bg-white rounded-lg'>
+          <h1 className='text-5xl font-bold font-["Poppins"] mb-2'>finimalist</h1>
           <h1 className='text-sm text-stone-400 font-["Poppins"] mb-4'>the personal finance terminal designed to minimize your finances</h1>
           {/* password field */}
           <label className="py-2 font-bold font-['Poppins'] text-xl w-full">token</label>
