@@ -21,16 +21,12 @@ function usePlaidConnectionStore() {
         // accounts already loaded
         if (store[connectionName].accounts) return
 
-        console.log('loading accounts for', connectionName, access_token)
-
-
         fetch(`/api/plaid/accounts/${access_token}`)
             .then(response => {
                 return response.json()
             }).then(responseJson => {
                 const { accounts } = responseJson
-                const newStore = { ...store, [connectionName]: {access_token: store[connectionName], accounts: accounts}}
-                setStore(newStore as PlaidConnectionStore)
+                setStore(old => ({ ...old, [connectionName]: { access_token: store[connectionName], accounts: accounts } } as PlaidConnectionStore))
             })
     }
 
@@ -42,7 +38,7 @@ function usePlaidConnectionStore() {
 
 
     const insert = (connectionName: string, connectionData: string) => {
-        setStore({ ...store, [connectionName]: { access_token: connectionData } })
+        setStore(old => ({ ...old, [connectionName]: { access_token: connectionData } }))
         setConnectionId(connectionId + 1)
         Cookies.set(connectionName, connectionData)
     }
@@ -75,14 +71,14 @@ function usePlaidConnectionStore() {
 
 type PlaidContextState = {
     store: PlaidConnectionStore;
-    PlaidConnectionLink: (connectionName: string) => JSX.Element;
+    PlaidConnectionLink: ({ connectionName }: { connectionName: string }) => JSX.Element;
     nextConnectionName: () => string;
     accounts: AccountBase[]
 
 }
 const PlaidContext = React.createContext<PlaidContextState>({
     store: {},
-    PlaidConnectionLink: (_connectionName: string) => <></>,
+    PlaidConnectionLink: ({ }: { connectionName: string }) => <></>,
     nextConnectionName: () => '',
     accounts: []
 });
@@ -102,7 +98,7 @@ export const PlaidProvider = ({ children }: PlaidProviderProps) => {
         }
     }, [linkToken]);
 
-    const PlaidConnectionLink = (connectionName: string) => {
+    const PlaidConnectionLink = ({ connectionName }: { connectionName: string }) => {
         const onSuccess = React.useCallback<PlaidLinkOnSuccess>(
             (public_token, metadata) => {
                 fetch(`/api/plaid/exchange_public_token/${public_token}`)

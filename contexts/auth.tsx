@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const authenticate = async (token: string) => {
         setIsLoading(true);
-        // authenticateAPI(token);
         return await fetch('/api/authenticate', {
             method: 'POST',
             body: JSON.stringify({
@@ -52,8 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             Cookies.set("token", token);
             return true;
         }).catch(error => {
-            // console.log({ error });
-            // unauthenticateAPI();
             setUser(null);
             Cookies.remove("token");
             return false

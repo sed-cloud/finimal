@@ -30,12 +30,10 @@ export default function handler(
             access_token: req.query.accessToken as string,
         })
             .then(response => {
-                console.log(response)
                 res.status(200).json(response.data);
                 // @ts-ignore
                 resolve()
             }).catch(error => {
-                console.log(error)
                 res.status(405).end(error)
                 // @ts-ignore
                 resolve()
