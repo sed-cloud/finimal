@@ -31,12 +31,10 @@ export default function handler(
             public_token: req.query.publicToken as string,
         })
             .then(response => {
-                console.log(response)
                 res.status(200).json({ access_token: response.data.access_token } );
                 // @ts-ignore
                 resolve()
             }).catch(error => {
-                console.log(error)
                 res.status(405).end(error)
                 // @ts-ignore
                 resolve()

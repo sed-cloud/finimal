@@ -1,5 +1,5 @@
 type LoadAccountCardProps = {
-    PlaidConnectionLink: (connectionName: string) => JSX.Element;
+    PlaidConnectionLink: ({ connectionName }: {connectionName: string}) => JSX.Element;
     nextConnectionName: () => string;
 }
 export const LoadAccountCard = ({ PlaidConnectionLink, nextConnectionName }: LoadAccountCardProps) => {
@@ -14,7 +14,7 @@ export const LoadAccountCard = ({ PlaidConnectionLink, nextConnectionName }: Loa
                 </p>
                 <div className="h-8"></div>
                 <div className="flex flex-row-reverse">
-                    {PlaidConnectionLink(nextConnectionName())}
+                    <PlaidConnectionLink connectionName={nextConnectionName()} />
                 </div>
             </div>
         </div>

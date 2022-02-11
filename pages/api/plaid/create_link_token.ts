@@ -47,12 +47,10 @@ export default function handler(
             .then(response => {
                 res.status(200)
                 res.json(response.data);
-                console.log(response.data)
                 // @ts-ignore
                 resolve()
             })
             .catch(error => {
-                console.log(error)
                 res.json(error);
                 res.status(405).end()
                 // @ts-ignore
