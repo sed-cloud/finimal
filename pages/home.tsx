@@ -125,9 +125,9 @@ const Home: CustomPage = () => {
                 </div>
             </div>
 
-            <div className='m-4 grid grid-flow-row-dense grid-cols-4'>
+            {/* <div className='m-4 grid grid-flow-row-dense grid-cols-4'>
                 <LoadAccountCard PlaidConnectionLink={PlaidConnectionLink} nextConnectionName={nextConnectionName} />
-            </div>
+    </div> */}
 
         </div>
     )
