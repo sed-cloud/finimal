@@ -4,11 +4,10 @@ import { Field } from "../components/Field";
 import { NavigationBar } from "../components/NavigationBar";
 import { usePlaid } from "../contexts/plaid";
 import { useStatsEngine } from "../hooks/useStatsEngine";
-import { LoadAccountCard } from "../components/LoadAccountCard";
 
 
 const Home: CustomPage = () => {
-    const { PlaidConnectionLink, nextConnectionName, accounts } = usePlaid()
+    const { accounts } = usePlaid()
     const {
         totalBalance,
         totalAccounts,

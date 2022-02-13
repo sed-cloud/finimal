@@ -1,10 +1,12 @@
-import { faBuildingColumns, faColumns, faWallet } from '@fortawesome/free-solid-svg-icons'
+import { faWallet } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { useAuth } from "../contexts/auth"
+import { usePlaid } from '../contexts/plaid'
 
 
 export const NavigationBar = () => {
+    const { PlaidIconLink, nextConnectionName } = usePlaid()
     const { logout } = useAuth()
 
     return (
@@ -26,20 +28,7 @@ export const NavigationBar = () => {
             </button>
             <div className='w-8' />
 
-            <button className='
-            transition-all 
-            ease-in-out 
-            durration-300
-
-            bg-stone-200
-            text-stone-900
-            px-4
-            rounded-xl
-            hover:bg-emerald-500
-            hover:text-emerald-50
-            '>
-                <FontAwesomeIcon icon={faBuildingColumns} size={'lg'} />
-            </button>
+            <PlaidIconLink connectionName={nextConnectionName()} />
             <div className='w-8' />
             <button className='
                 transition-all 

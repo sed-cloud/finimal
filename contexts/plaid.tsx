@@ -3,8 +3,8 @@ import { AccountBase } from 'plaid';
 import React, { useContext, useEffect, useState } from 'react'
 import { PlaidLinkOnSuccess } from 'react-plaid-link';
 import { CustomAppProps, CustomPage } from '../lib/custom-page';
-import { PlaidLink } from '../components/plaid-link';
 import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
+import { PlaidIcon } from '../components/plaid';
 
 
 type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
@@ -71,14 +71,14 @@ function usePlaidConnectionStore() {
 
 type PlaidContextState = {
     store: PlaidConnectionStore;
-    PlaidConnectionLink: ({ connectionName }: { connectionName: string }) => JSX.Element;
+    PlaidIconLink: ({ connectionName }: { connectionName: string }) => JSX.Element;
     nextConnectionName: () => string;
     accounts: AccountBase[]
 
 }
 const PlaidContext = React.createContext<PlaidContextState>({
     store: {},
-    PlaidConnectionLink: ({ }: { connectionName: string }) => <></>,
+    PlaidIconLink: ({ }: { connectionName: string }) => <></>,
     nextConnectionName: () => '',
     accounts: []
 });
@@ -98,7 +98,7 @@ export const PlaidProvider = ({ children }: PlaidProviderProps) => {
         }
     }, [linkToken]);
 
-    const PlaidConnectionLink = ({ connectionName }: { connectionName: string }) => {
+    const PlaidIconLink = ({ connectionName }: { connectionName: string }) => {
         const onSuccess = React.useCallback<PlaidLinkOnSuccess>(
             (public_token, metadata) => {
                 fetch(`/api/plaid/exchange_public_token/${public_token}`)
@@ -116,7 +116,7 @@ export const PlaidProvider = ({ children }: PlaidProviderProps) => {
         );
 
         return (
-            <PlaidLink connectionName={connectionName} token={linkToken !== null ? linkToken : ''} onSuccess={onSuccess} />
+            <PlaidIcon connectionName={connectionName} token={linkToken !== null ? linkToken : ''} onSuccess={onSuccess} />
         )
     }
 
@@ -142,7 +142,7 @@ export const PlaidProvider = ({ children }: PlaidProviderProps) => {
         <PlaidContext.Provider value={{
             store,
             nextConnectionName,
-            PlaidConnectionLink,
+            PlaidIconLink,
             accounts: accounts()
         }}>
             {children}
