@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { useAuth } from "../contexts/auth"
 import { usePlaid } from '../contexts/plaid'
+import { Tooltip } from './Tooltip'
 
 
 export const NavigationBar = () => {
@@ -45,8 +46,10 @@ export const NavigationBar = () => {
 
                 hover:bg-pink-600
                 hover:text-pink-50
+                has-tooltip
                 '
                 onClick={() => logout('/')}>
+                <Tooltip text='Exit the application and remove all saved data' />
                 logout
             </button>
         </nav>
