@@ -25,6 +25,7 @@ const PlaidIcon = ({ token, onSuccess }: PlaidIconProps) => {
             ease-in-out 
             durration-300
             has-tooltip
+            group
             
             bg-stone-200
             text-stone-900
