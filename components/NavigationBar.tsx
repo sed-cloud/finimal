@@ -4,7 +4,6 @@ import React from 'react'
 import { useAuth } from "../contexts/auth"
 import { usePlaid } from '../contexts/plaid'
 import { CryptoIcon } from './crypto'
-import { Tooltip } from './Tooltip'
 
 
 export const NavigationBar = () => {
@@ -33,11 +32,8 @@ export const NavigationBar = () => {
 
                 hover:bg-red-600
                 hover:text-red-50
-                has-tooltip
-                group
                 '
                 onClick={() => logout('/')}>
-                <Tooltip text='Exit the application and remove all saved data' />
                 logout
             </button>
         </nav>

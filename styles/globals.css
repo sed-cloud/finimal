@@ -3,14 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+body, html:root {
     @apply bg-stone-100;
 }
 
-.tooltip {
+/* .tooltip {
   @apply invisible absolute;
 }
 
 .has-tooltip:hover .tooltip {
   @apply visible z-50;
-}
+} */
