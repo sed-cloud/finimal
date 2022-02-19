@@ -5,6 +5,7 @@ import { PlaidLinkOnSuccess } from 'react-plaid-link';
 import { CustomAppProps, CustomPage } from '../lib/custom-page';
 import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
 import { PlaidIcon } from '../components/plaid';
+import { isTransactionsReady } from '../lib/plaidWebhookManager';
 
 
 type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
@@ -56,16 +57,18 @@ function usePlaidConnectionStore() {
     useEffect(() => {
         for (const key of Object.keys(store)) {
             if (store[key].accounts) continue
-
             loadAccounts(key)
-            useEffect(() => {
-                if (Cookies.get(store[key].item_id) === 'transactions_hist_update') {
-                    loadAccounts(key)
-                }
-            }, [store, Cookies.get(store[key].item_id)])
         }
     }, [store])
 
+    useEffect(() => {
+        for (const key of Object.keys(store)) {
+            if (store[key].transactions) continue
+            if (isTransactionsReady(store[key].item_id)) {
+                loadTransactions(key)
+            }
+        }
+    }, [store, Object.keys(store).forEach(key => isTransactionsReady(store[key].item_id))])
 
 
     const insert = (connectionName: string, connectionData: string, itemId: string) => {
