@@ -5,7 +5,7 @@ import { PlaidLinkOnSuccess } from 'react-plaid-link';
 import { CustomAppProps, CustomPage } from '../lib/custom-page';
 import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
 import { PlaidIcon } from '../components/plaid';
-import { isTransactionsReady } from '../lib/plaidWebhookManager';
+import { isTransactionsReady, WEBHOOK_STATE_GLOBAL_DATA_OBJECT } from '../lib/plaidWebhookManager';
 
 
 type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
@@ -68,7 +68,7 @@ function usePlaidConnectionStore() {
                 loadTransactions(key)
             }
         }
-    }, [store, Object.keys(store).forEach(key => isTransactionsReady(store[key].item_id))])
+    }, [store, WEBHOOK_STATE_GLOBAL_DATA_OBJECT])
 
 
     const insert = (connectionName: string, connectionData: string, itemId: string) => {
