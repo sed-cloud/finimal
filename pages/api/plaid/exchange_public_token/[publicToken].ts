@@ -20,6 +20,7 @@ const client = new PlaidApi(configuration);
 
 type Data = {
     access_token: string
+    item_id: string
 }
 
 export default function handler(
@@ -31,7 +32,7 @@ export default function handler(
             public_token: req.query.publicToken as string,
         })
             .then(response => {
-                res.status(200).json({ access_token: response.data.access_token } );
+                res.status(200).json({ access_token: response.data.access_token, item_id: response.data.item_id } );
                 // @ts-ignore
                 resolve()
             }).catch(error => {

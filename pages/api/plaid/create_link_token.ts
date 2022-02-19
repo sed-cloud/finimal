@@ -17,6 +17,9 @@ const configuration = new Configuration({
     },
 });
 
+// TODO env variable stuff
+const WEBHOOK = 'http://204.48.31.202:3000/api/plaid/webhooks'
+
 const client = new PlaidApi(configuration);
 
 type Data = {
@@ -35,7 +38,7 @@ export default function handler(
         client_name: 'Plaid Test App',
         products: [Products.Auth],
         language: 'en',
-        // webhook: 'https://webhook.example.com',
+        webhook: WEBHOOK,
         // redirect_uri: 'https://test.example.com/oauth.html',
         country_codes: [CountryCode.Us],
     };
