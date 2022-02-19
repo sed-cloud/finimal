@@ -1,6 +1,6 @@
 
 
-const WEBHOOK_STATE_GLOBAL_DATA_OBJECT: { [key: string]: { transactionsReady?: boolean } } = {}
+export const WEBHOOK_STATE_GLOBAL_DATA_OBJECT: { [key: string]: { transactionsReady?: boolean } } = {}
 
 export function setTransactionsReady(itemId: string) {
     WEBHOOK_STATE_GLOBAL_DATA_OBJECT[itemId] = { transactionsReady: true }
