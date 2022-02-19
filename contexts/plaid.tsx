@@ -5,7 +5,6 @@ import { PlaidLinkOnSuccess } from 'react-plaid-link';
 import { CustomAppProps, CustomPage } from '../lib/custom-page';
 import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
 import { PlaidIcon } from '../components/plaid';
-import { isTransactionsReady, WEBHOOK_STATE_GLOBAL_DATA_OBJECT } from '../lib/plaidWebhookManager';
 
 
 type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
@@ -14,6 +13,7 @@ type PlaidConnection = {
     item_id: string
     accounts?: AccountBase[]
     transactions?: TransactionBase[],
+    transaction_refresh?: any
 }
 
 function usePlaidConnectionStore() {
@@ -34,7 +34,7 @@ function usePlaidConnectionStore() {
     }
 
     const loadTransactions = (connectionName: string) => {
-        if (store[connectionName].accounts) return
+        if (store[connectionName].transactions) return
 
         fetch(`/api/plaid/transactions`, { method: 'POST', body: JSON.stringify({ accessToken: store[connectionName].access_token }) })
             .then(response => {
@@ -56,19 +56,18 @@ function usePlaidConnectionStore() {
 
     useEffect(() => {
         for (const key of Object.keys(store)) {
-            if (store[key].accounts) continue
-            loadAccounts(key)
+            if (store[key].accounts === undefined)
+                loadAccounts(key)
+
+            if (store[key].transactions) { clearInterval(store[key].transaction_refresh); continue }
+            if (store[key].transaction_refresh) { continue }
+
+            store[key].transaction_refresh = setInterval(async function () {
+                console.log('test')
+                loadTransactions(key)
+            }, 1000)
         }
     }, [store])
-
-    useEffect(() => {
-        for (const key of Object.keys(store)) {
-            if (store[key].transactions) continue
-            if (isTransactionsReady(store[key].item_id)) {
-                loadTransactions(key)
-            }
-        }
-    }, [store, WEBHOOK_STATE_GLOBAL_DATA_OBJECT])
 
 
     const insert = (connectionName: string, connectionData: string, itemId: string) => {
