@@ -55,9 +55,17 @@ function usePlaidConnectionStore() {
 
     useEffect(() => {
         for (const key of Object.keys(store)) {
+            if (store[key].accounts) continue
+
             loadAccounts(key)
+            useEffect(() => {
+                if (Cookies.get(store[key].item_id) === 'transactions_hist_update') {
+                    loadAccounts(key)
+                }
+            }, [store, Cookies.get(store[key].item_id)])
         }
     }, [store])
+
 
 
     const insert = (connectionName: string, connectionData: string, itemId: string) => {
@@ -98,8 +106,6 @@ type PlaidContextState = {
     nextConnectionName: () => string;
     accounts: AccountBase[],
     transactions: TransactionBase[],
-    loadTransactions: (_connectionName: string) => void,
-    getConnectionNameFromItemId: (_itemId: string) => string | undefined
 
 
 }
@@ -109,8 +115,6 @@ const PlaidContext = React.createContext<PlaidContextState>({
     nextConnectionName: () => '',
     accounts: [],
     transactions: [],
-    loadTransactions: (_connectionName: string) => { },
-    getConnectionNameFromItemId: (_itemId: string) => undefined
 });
 
 
@@ -189,8 +193,6 @@ export const PlaidProvider = ({ children }: PlaidProviderProps) => {
             PlaidIconLink,
             accounts: accounts(),
             transactions: transactions(),
-            loadTransactions,
-            getConnectionNameFromItemId
         }}>
             {children}
         </PlaidContext.Provider>
