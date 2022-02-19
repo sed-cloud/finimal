@@ -5,7 +5,7 @@ import { Configuration, CountryCode, PlaidApi, PlaidEnvironments, Products } fro
 
 if (!process.env.FINIMAL_TIER) { throw new Error('Unable to load Plaid tier') }
 if (!process.env[`PLAID_CLIENT_ID`]) { throw new Error('Unable to load Plaid client id') }
-if (!process.env[`PLAID_SECRET_${process.env.FINIMAL_TIER}`]) { throw new Error('Unable to load Plaid secret')}
+if (!process.env[`PLAID_SECRET_${process.env.FINIMAL_TIER}`]) { throw new Error('Unable to load Plaid secret') }
 
 const configuration = new Configuration({
     basePath: PlaidEnvironments[process.env.FINIMAL_TIER.toLowerCase()],
@@ -36,7 +36,7 @@ export default function handler(
             client_user_id: 'user-id',
         },
         client_name: 'Plaid Test App',
-        products: [Products.Auth],
+        products: [Products.Auth, Products.Transactions],
         language: 'en',
         webhook: WEBHOOK,
         // redirect_uri: 'https://test.example.com/oauth.html',
