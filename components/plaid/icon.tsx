@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from "react-plaid-link";
 
 interface PlaidIconProps {
-    connectionName: string;
+    // connectionName: string;
     token: string;
     onSuccess: PlaidLinkOnSuccess;
 }
