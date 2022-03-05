@@ -1,4 +1,4 @@
-import { AccountBase, AccountType } from "plaid";
+import { AccountBase, AccountType, TransactionBase } from "plaid";
 
 type StatTableDefinition = {
     accountStats: {
@@ -11,12 +11,23 @@ type StatTableDefinition = {
         values: {
             [statName: string]: number
         }
+    },
+    transactionStats: {
+        functions: {
+            [statName: string]: {
+                callback: any
+            }[]
+        },
+        values: {
+            [statName: string]: number
+        }
     }
 }
 
 export class StatsEngine {
     private static StatTable: StatTableDefinition = {
-        accountStats: { functions: {}, values: {} }
+        accountStats: { functions: {}, values: {} },
+        transactionStats: { functions: {}, values: {} }
     }
 
     private static AccountStat = (name: string, accountTypes: AccountType[] = []) =>
@@ -39,6 +50,7 @@ export class StatsEngine {
     }
 
     public static computeAccountStats(accounts: AccountBase[]) {
+        StatsEngine.StatTable.accountStats.values = {} // zero out
         for (const stat of Object.keys(StatsEngine.StatTable.accountStats.functions)) {
 
             const processFunctions = StatsEngine.StatTable.accountStats.functions[stat]
@@ -58,6 +70,45 @@ export class StatsEngine {
                         StatsEngine.StatTable.accountStats.values[stat] += callback(filteredAccountList)
                     } else {
                         StatsEngine.StatTable.accountStats.values[stat] = callback(filteredAccountList)
+                    }
+                }
+
+            })
+        }
+        return StatsEngine.StatTable.accountStats.values
+    }
+
+    private static TransactionStat = (name: string) =>
+        (_target: Object, _propertyKey: string, descriptor: PropertyDescriptor) => {
+            const payload = {
+                callback: descriptor.value
+            }
+
+            if (Object.keys(StatsEngine.StatTable.transactionStats.functions).includes(name)) {
+                StatsEngine.StatTable.transactionStats.functions[name].push(payload)
+            } else {
+                StatsEngine.StatTable.transactionStats.functions[name] = [payload]
+            }
+            return descriptor;
+        }
+
+    public static getTransactionStats() {
+        return StatsEngine.StatTable.transactionStats.values
+    }
+
+    public static computeTransactionStats(transactions: TransactionBase[]) {
+        for (const stat of Object.keys(StatsEngine.StatTable.transactionStats.functions)) {
+
+            const processFunctions = StatsEngine.StatTable.transactionStats.functions[stat]
+
+            processFunctions.forEach(definition => {
+                const { callback } = definition
+
+                if (transactions.length > 0) {
+                    if (Object.keys(StatsEngine.StatTable.transactionStats.values).includes(stat)) {
+                        StatsEngine.StatTable.transactionStats.values[stat] += callback(transactions)
+                    } else {
+                        StatsEngine.StatTable.transactionStats.values[stat] = callback(transactions)
                     }
                 }
 
@@ -223,5 +274,10 @@ export class StatsEngine {
             }
         }
         return total
+    }
+
+    @StatsEngine.TransactionStat('totalTransactions')
+    public static totalTransactions(transactions: TransactionBase[]) {
+        return transactions.length
     }
 }

@@ -1,11 +1,11 @@
 import { AccountBase, TransactionBase } from "plaid";
 import { AddConnectionAction, LoadAccountAction, LoadTransactionsAction, PlaidState } from "./models";
-import { StatsEngine } from "./stats";
+import { StatsEngine } from "../../lib/stats";
 
 export async function addConnection(action: AddConnectionAction, oldState: PlaidState) {
     let newState = await __processNewAccounts(action.payload.accessToken, oldState)
     StatsEngine.computeAccountStats(getAllAccounts(newState))
-    newState.stats = StatsEngine.getAccountStats()
+    newState.stats.accountStats = StatsEngine.getAccountStats()
     return newState
 }
 
@@ -15,30 +15,30 @@ export async function loadAccounts(_action: LoadAccountAction, oldState: PlaidSt
         newState = await __processNewAccounts(oldState.items[accountId].accessToken, newState)
     }
     StatsEngine.computeAccountStats(getAllAccounts(newState))
-    newState.stats = StatsEngine.getAccountStats()
+    newState.stats.accountStats = StatsEngine.getAccountStats()
     return newState
 }
 
-export async function loadTransactions(action: LoadTransactionsAction, oldState: PlaidState) {
-    const accessToken = oldState.items[action.payload.accountId].accessToken
-    return __loadTransactions(accessToken).then(
-        ({ transactions }) => {
-            let newState = oldState
-            for (const transaction of transactions) {
-                const transactionAccountId = transaction.account_id
-                const filtered = newState.items[transactionAccountId].transactions.filter(value => {
-                    return value.transaction_id === transaction.transaction_id
-                })
+export async function loadTransactions(_action: LoadTransactionsAction, oldState: PlaidState) {
+    let newState = oldState
+    for (const accountId of Object.keys(newState.items)) {
+        const accessToken = newState.items[accountId].accessToken
+        const transactions = (await __loadTransactions(accessToken)).transactions
+        for (const transaction of transactions) {
+            const transactionAccountId = transaction.account_id
+            const filtered = newState.items[transactionAccountId].transactions.filter(value => {
+                return value.transaction_id === transaction.transaction_id
+            })
 
-                if (filtered.length === 0) {
-                    // transaction we are processing is not stored yet
-                    newState.items[transactionAccountId].transactions.push(transaction)
-                }
+            if (filtered.length === 0) {
+                // transaction we are processing is not stored yet
+                newState.items[transactionAccountId].transactions.push(transaction)
             }
-            return newState
         }
-    )
-
+    }
+    StatsEngine.computeTransactionStats(getAllTransactions(newState))
+    newState.stats.transactionStats = StatsEngine.getTransactionStats()
+    return newState
 }
 
 export function getAllAccounts(state: PlaidState) {
@@ -49,6 +49,16 @@ export function getAllAccounts(state: PlaidState) {
         accountList.push(account)
     }
     return accountList
+}
+
+export function getAllTransactions(state: PlaidState) {
+    const transactionList: TransactionBase[] = []
+    console.log(Object.keys(state.items))
+    for (const accountId of Object.keys(state.items)) {
+        const transactions = state.items[accountId].transactions
+        transactionList.concat(transactions)
+    }
+    return transactionList
 }
 
 async function __loadTransactions(accessToken: string): Promise<{ transactions: TransactionBase[]; itemId: string | undefined; }> {

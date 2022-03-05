@@ -1,21 +1,19 @@
 import { faBuildingColumns } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { PlaidLinkOnSuccess, PlaidLinkOptions, usePlaidLink } from "react-plaid-link";
+import { PlaidLinkOptions, usePlaidLink } from "react-plaid-link";
+import { usePlaidAccessTokenStore } from "../../hooks/usePlaidAccessTokenStore";
 
-interface PlaidIconProps {
-    // connectionName: string;
-    token: string;
-    onSuccess: PlaidLinkOnSuccess;
-}
-const PlaidIcon = ({ token, onSuccess }: PlaidIconProps) => {
+const PlaidIcon = () => {
+    const { linkToken, handleTokenExchange } = usePlaidAccessTokenStore()
+
     const config: PlaidLinkOptions = {
-        token,
-        onSuccess,
+        token: linkToken ?? '',
+        onSuccess: handleTokenExchange,
         // onExit
         // onEvent
     };
 
-    const { open, ready, error } = usePlaidLink(config);
+    const { open, ready } = usePlaidLink(config);
 
 
     return (
