@@ -1,7 +1,5 @@
 import { AccountBase } from "plaid"
 
-
-
 type AccountCardProps = {
     account: AccountBase
 }

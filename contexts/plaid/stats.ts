@@ -26,7 +26,7 @@ export class StatsEngine {
                 callback: descriptor.value
             }
 
-            if (name in StatsEngine.StatTable.accountStats) {
+            if (Object.keys(StatsEngine.StatTable.accountStats.functions).includes(name)) {
                 StatsEngine.StatTable.accountStats.functions[name].push(payload)
             } else {
                 StatsEngine.StatTable.accountStats.functions[name] = [payload]
@@ -35,12 +35,11 @@ export class StatsEngine {
         }
 
     public static getAccountStats() {
-        return StatsEngine.StatTable.accountStats.values 
+        return StatsEngine.StatTable.accountStats.values
     }
 
     public static computeAccountStats(accounts: AccountBase[]) {
         for (const stat of Object.keys(StatsEngine.StatTable.accountStats.functions)) {
-            StatsEngine.StatTable.accountStats.values[stat] = 0
 
             const processFunctions = StatsEngine.StatTable.accountStats.functions[stat]
 
@@ -54,8 +53,14 @@ export class StatsEngine {
                     }
                 }
 
-                
-                StatsEngine.StatTable.accountStats.values[stat] += callback(filteredAccountList)
+                if (filteredAccountList.length > 0) {
+                    if (Object.keys(StatsEngine.StatTable.accountStats.values).includes(stat)) {
+                        StatsEngine.StatTable.accountStats.values[stat] += callback(filteredAccountList)
+                    } else {
+                        StatsEngine.StatTable.accountStats.values[stat] = callback(filteredAccountList)
+                    }
+                }
+
             })
         }
     }
@@ -81,10 +86,10 @@ export class StatsEngine {
         return accounts.length
     }
 
-    @StatsEngine.AccountStat('totalBankCount', [
+    @StatsEngine.AccountStat('totalBankAccounts', [
         AccountType.Depository,
     ])
-    public static totalBankCount(accounts: AccountBase[]) {
+    public static totalBankAccounts(accounts: AccountBase[]) {
         return accounts.length
     }
 

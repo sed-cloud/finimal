@@ -3,10 +3,12 @@ import { CustomPage } from '../lib/custom-page';
 import { Field } from "../components/Field";
 import { NavigationBar } from "../components/NavigationBar";
 import { usePlaidAPI } from "../contexts/plaid/context";
+import { camelToTitle } from "../lib/textLib";
 
 
 const Home: CustomPage = () => {
     const { accountStats } = usePlaidAPI()
+    const gridRows = Object.keys(accountStats).length / 6 
 
     return (
         <div className='m-4'>
@@ -17,11 +19,11 @@ const Home: CustomPage = () => {
                     <h1 className='text-stone-900 font-["Poppins"] text-3xl font-extrabold italic flex-1'>dashboard</h1>
                     <div className="h-4"></div>
 
-                    {accountStats.totalAccounts > 0 && <div className="grid grid-rows-3 grid-cols-6">
+                    {accountStats.totalAccounts > 0 && <div className={`grid grid-rows-${gridRows} grid-cols-6`}>
                         {Object.keys(accountStats).map((value, index) => {
                             return <Field
                                 key={index}
-                                text={value}
+                                text={camelToTitle(value)}
                                 value={accountStats[value] === undefined ? '-' : accountStats[value].toLocaleString('en-US')}
                                 valueColor={'text-neutral'}
                             />
