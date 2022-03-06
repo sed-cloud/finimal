@@ -19,9 +19,10 @@ function filterTransactionsByMerchantName(transactions: Transaction[] | undefine
     return list
 }
 
-export const useMerchantFilter = (data?: Transaction[]) => {
+export const useMerchantFilter = (data: Transaction[] | undefined, allMerchants: string[]) => {
     const [merchants, setMerchants] = useState<string[]>([])
     const addMerchant = (merchant: string) => {
+        if (!allMerchants.includes(merchant)) return
         setMerchants(old => [...old, merchant])
     }
     const removeMerchant = (merchant: string) => {
@@ -37,5 +38,5 @@ export const useMerchantFilter = (data?: Transaction[]) => {
         setTransactions(filterTransactionsByMerchantName(data, merchants))
     }, [data, merchants])
 
-    return { addMerchant, removeMerchant, resetMerchant, dataFilteredByMerchant: transactions }
+    return { addMerchant, removeMerchant, resetMerchant, dataFilteredByMerchant: transactions, merchants }
 }

@@ -6,7 +6,7 @@ type TransactionCardProps = {
 }
 const TransactionCard = ({ transaction }: TransactionCardProps) => {
     return (
-        <div className="card outline outline-2 outline-stone-200 m-8 ">
+        <div className="card bg-stone-100 m-4 shadow-lg">
             <div className="p-4">
                 <div className="flex flex-row justify-between">
                     <h2 className='card-title px-4 font-bold font-["Poppins"]'>{transaction.name}</h2>
