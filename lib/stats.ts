@@ -1,4 +1,4 @@
-import { AccountBase, AccountType, TransactionBase } from "plaid";
+import { AccountBase, AccountType, Transaction, TransactionBase } from "plaid";
 
 type StatTableDefinition = {
     accountStats: {
@@ -96,7 +96,8 @@ export class StatsEngine {
         return StatsEngine.StatTable.transactionStats.values
     }
 
-    public static computeTransactionStats(transactions: TransactionBase[]) {
+    public static computeTransactionStats(transactions: Transaction[]) {
+        StatsEngine.StatTable.transactionStats.values = {}
         for (const stat of Object.keys(StatsEngine.StatTable.transactionStats.functions)) {
 
             const processFunctions = StatsEngine.StatTable.transactionStats.functions[stat]
@@ -114,6 +115,8 @@ export class StatsEngine {
 
             })
         }
+
+        return StatsEngine.StatTable.transactionStats.values
     }
 
     // STAT DEFINITIONS ================================================================

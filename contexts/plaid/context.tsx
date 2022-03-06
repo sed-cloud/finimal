@@ -1,14 +1,16 @@
 
 import * as React from 'react'
-import { PlaidAction, PlaidState } from './models'
 
 
-
+export type PlaidState = {
+    accessTokens: Set<string>
+}
+export type PlaidAction = { type: 'storeToken', payload: { token: string } }
 type Dispatch = (action: PlaidAction) => void
 type PlaidProviderProps = { children: React.ReactNode }
 
 const DEFAULT_STATE = {
-    accessTokens: []
+    accessTokens: new Set<string>()
 }
 
 const PlaidStateContext = React.createContext<PlaidState>(DEFAULT_STATE)
@@ -17,7 +19,7 @@ const PlaidDispatchContext = React.createContext<Dispatch | undefined>(undefined
 async function PlaidReducer(state: PlaidState, action: PlaidAction) {
     switch (action.type) {
         case 'storeToken': {
-            return { ...state, accessTokens: [ ...state.accessTokens, action.payload.token]}
+            return { ...state, accessTokens: state.accessTokens.add(action.payload.token)}
         }
         default:
             return state

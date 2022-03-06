@@ -20,5 +20,5 @@ export const usePlaidAccessTokenStore = () => {
 
 
 
-    return { linkToken, handleTokenExchange, accessTokens: state.accessTokens }
+    return { linkToken, handleTokenExchange, accessTokens: Array.from(state.accessTokens) }
 }

@@ -13,6 +13,7 @@ export default function handler(
     if (tokens.length === 0) {
         return new Promise((resolve, reject) => {
             res.status(200).json([])
+            //@ts-ignore
             resolve()
         })
     }
@@ -36,6 +37,7 @@ export default function handler(
             allAccounts = allAccounts.concat(accounts);
         });
         res.status(200).json(allAccounts);
+        //@ts-ignore
         resolve();
     })
 }

@@ -1,7 +1,8 @@
+import { AccountBase } from "plaid";
 import useSWR from "swr"
 import { useAccountInsights } from "./useInsights";
 
-async function loadAccounts(url: string, accessTokens: string[]) {
+async function loadAccounts(url: string, accessTokens: string[]): Promise<AccountBase[]> {
     return fetch(`${url}`,
         {
             method: 'POST',
@@ -13,6 +14,5 @@ async function loadAccounts(url: string, accessTokens: string[]) {
 export const usePlaidAccounts = (accessTokens: string[]) => {
     const { data } = useSWR([`/api/plaid/accounts/`, accessTokens], loadAccounts)
     const { insights } = useAccountInsights(data)
-
     return { accounts: data, insights }
 }
