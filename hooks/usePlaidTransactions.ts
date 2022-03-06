@@ -1,6 +1,7 @@
-import { Transaction } from "plaid"
 import useSWR from "swr"
+import { Transaction } from "plaid"
 import { useTransactionInsights } from "./useInsights"
+import { useMerchantFilter } from "./useMerchantFilter"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -24,7 +25,15 @@ async function loadTransactions(url: string, accessTokens: string[]): Promise<Tr
 }
 
 export const usePlaidTransactions = (accessTokens: string[]) => {
-    const { data } = useSWR([`/api/plaid/transactions/`, accessTokens], loadTransactions, { refreshInterval: 5_000})
-    const { insights } = useTransactionInsights(data)
-    return { transactions: data, transactionsInsights: insights }
+    const { data } = useSWR([`/api/plaid/transactions/`, accessTokens], loadTransactions, { refreshInterval: 5_000 })
+    const { addMerchant, removeMerchant, resetMerchant, dataFilteredByMerchant } = useMerchantFilter(data)
+    const { insights } = useTransactionInsights(dataFilteredByMerchant)
+
+    const TransactionFilterAPI = {
+        addMerchant,
+        removeMerchant,
+        resetMerchant
+    }
+
+    return { transactions: dataFilteredByMerchant, transactionsInsights: insights, TransactionFilterAPI }
 }
