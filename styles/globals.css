@@ -7,10 +7,13 @@ body, html:root {
     @apply bg-stone-100;
 }
 
-/* .tooltip {
-  @apply invisible absolute;
+.scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-stone-400;
+  border: 6px solid transparent;
+  border-radius: 32px;
+  background-clip: padding-box;  
 }
 
-.has-tooltip:hover .tooltip {
-  @apply visible z-50;
-} */
+.scrollbar::-webkit-scrollbar {
+  width: 16px;
+}

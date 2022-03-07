@@ -10,7 +10,7 @@ type MultiSelectProps = {
 const MultiSelect = ({ text, items, callback }: MultiSelectProps) => {
     console.log(items)
     return (
-        <div className="dropdown">
+        <div className="dropdown ">
             <button tabIndex={0} className="
                 transition-all 
                 ease-in-out 
@@ -24,24 +24,29 @@ const MultiSelect = ({ text, items, callback }: MultiSelectProps) => {
                 font-bold
                 rounded-xl
 
+                
+
                 hover:bg-stone-600
                 hover:text-red-50
             ">{text}</button>
-            <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+            <div tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg w-48 max-h-64 overflow-y-auto scrollbar">
                 {items.map((item, index) => {
                     return (<button
                         className="
-                        label
-                        justify-start
+                        flex-1
+                        grid
+                        grid-cols-[2rem_1fr]
+                        justify-items-start
+                        p-2
                         cursor-pointer
                         rounded-xl
-                        hover:bg-stone-200 pl-2"
+                        hover:bg-stone-200"
                         key={index} onClick={() => callback(item.text)}>
-                        <input type="checkbox" checked={item.checked} className="checkbox mr-2" />
-                        <span className="text-ellipsis overflow-hidden whitespace-nowrap">{item.text}</span>
+                        <input type="checkbox" checked={item.checked} className="checkbox" />
+                        <span className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{item.text}</span>
                     </button>)
                 })}
-            </ul>
+            </div>
         </div>
     )
 }

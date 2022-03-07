@@ -3,6 +3,8 @@ import { Transaction } from "plaid"
 import { useTransactionInsights } from "./useInsights"
 import { useMerchantFilter } from "./useMerchantFilter"
 import { useMerchants } from "./useMerchants"
+import { useCategories } from "./useCategories"
+import { useCategoryFilter } from "./useCategoryFilter"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -27,20 +29,50 @@ async function loadTransactions(url: string, accessTokens: string[]): Promise<Tr
 
 export const usePlaidTransactions = (accessTokens: string[]) => {
     const { data } = useSWR([`/api/plaid/transactions/`, accessTokens], loadTransactions, { refreshInterval: 5_000 })
+    
     const { merchants: allMerchants } = useMerchants(data)
-    const { addMerchant, removeMerchant, resetMerchant, dataFilteredByMerchant, merchants: filteredMerchants } = useMerchantFilter(data, allMerchants)
-    const { insights } = useTransactionInsights(dataFilteredByMerchant)
+    const { categories: allCategories } = useCategories(data)
+
+    const {
+        addMerchant,
+        removeMerchant,
+        resetMerchant,
+        dataFilteredByMerchant,
+        merchants: filteredMerchants
+    } = useMerchantFilter(data, allMerchants)
+
+    const {
+        addCategory,
+        removeCategory,
+        resetCategory,
+        dataFilteredByCategory,
+        categories: filteredCategories
+    } = useCategoryFilter(dataFilteredByMerchant, allCategories)
+    
+    const { insights } = useTransactionInsights(dataFilteredByCategory)
 
     const TransactionAttributeAPI = {
-        merchants: allMerchants
+        merchants: allMerchants,
+        categories: allCategories
     }
 
     const TransactionFilterAPI = {
         addMerchant,
         removeMerchant,
         resetMerchant,
-        merchants: filteredMerchants
+        merchants: filteredMerchants,
+
+        addCategory,
+        removeCategory,
+        resetCategory,
+        dataFilteredByCategory,
+        categories: filteredCategories
     }
 
-    return { transactions: dataFilteredByMerchant, transactionsInsights: insights, TransactionAttributeAPI, TransactionFilterAPI }
+    return {
+        transactions: dataFilteredByCategory,
+        transactionsInsights: insights,
+        TransactionAttributeAPI,
+        TransactionFilterAPI
+    }
 }

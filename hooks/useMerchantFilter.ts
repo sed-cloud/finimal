@@ -12,6 +12,7 @@ function filterTransactionsByMerchantName(transactions: Transaction[] | undefine
         for (const merchant of merchants) {
             if (transaction.merchant_name === merchant) {
                 list.push(transaction)
+                break
             }
         }
     }
