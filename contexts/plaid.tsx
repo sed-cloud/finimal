@@ -1,206 +1,232 @@
-import Cookies from 'js-cookie';
-import { AccountBase, TransactionBase } from 'plaid';
-import React, { useContext, useEffect, useState } from 'react'
-import { PlaidLinkOnSuccess } from 'react-plaid-link';
-import { CustomAppProps, CustomPage } from '../lib/custom-page';
-import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
-import { PlaidIcon } from '../components/plaid';
+// import Cookies from 'js-cookie';
+// import { AccountBase, TransactionBase } from 'plaid';
+// import React, { useContext, useEffect, useState } from 'react'
+// import { PlaidLinkOnSuccess } from 'react-plaid-link';
+// import { CustomAppProps, CustomPage } from '../lib/custom-page';
+// import { usePlaidLinkToken } from '../hooks/usePlaidLinkToken';
+// import { PlaidIcon } from '../components/plaid';
 
 
-type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
-type PlaidConnection = {
-    access_token: string
-    item_id: string
-    accounts?: AccountBase[]
-    transactions?: TransactionBase[],
-    transaction_refresh?: any
-}
+// type PlaidConnectionStore = { [connectionName: string]: PlaidConnection }
+// type PlaidConnection = {
+//     access_token: string
+//     item_id: string
+//     accounts?: AccountBase[]
+//     transactions?: TransactionBase[],
+//     transaction_refresh?: any
+// }
 
-function usePlaidConnectionStore() {
-    const [connectionId, setConnectionId] = useState(0)
-    const [store, setStore] = useState<PlaidConnectionStore>({})
+// function usePlaidConnectionStore() {
+//     const [connectionId, setConnectionId] = useState(0)
+//     const [store, setStore] = useState<PlaidConnectionStore>({})
 
-    const loadAccounts = (connectionName: string) => {
-        // accounts already loaded
-        if (store[connectionName].accounts) return
+//     const loadAccounts = (connectionName: string) => {
+//         // accounts already loaded
+//         if (store[connectionName].accounts) return
 
-        fetch(`/api/plaid/accounts/${store[connectionName].access_token}`)
-            .then(response => {
-                return response.json()
-            }).then(responseJson => {
-                const { accounts, item } = responseJson
-                setStore(old => ({ ...old, [connectionName]: { ...old[connectionName], accounts: accounts, item_id: item.item_id } } as PlaidConnectionStore))
-            })
-    }
+//         fetch(`/api/plaid/accounts/${store[connectionName].access_token}`)
+//             .then(response => {
+//                 return response.json()
+//             }).then(responseJson => {
+//                 const { accounts, item } = responseJson
+//                 setStore(old => ({ ...old, [connectionName]: { ...old[connectionName], accounts: accounts, item_id: item.item_id } } as PlaidConnectionStore))
+//             })
+//     }
 
-    const loadTransactions = (connectionName: string) => {
-        if (store[connectionName].transactions) return
+//     const loadTransactions = (connectionName: string) => {
+//         // if (store[connectionName].transactions) return
 
-        fetch(`/api/plaid/transactions`, { method: 'POST', body: JSON.stringify({ accessToken: store[connectionName].access_token }) })
-            .then(response => {
-                return response.json()
-            }).then(responseJson => {
-                const { transactions } = responseJson
-                setStore(old => ({ ...old, [connectionName]: { ...old[connectionName], transactions: transactions } } as PlaidConnectionStore))
-            })
-    }
+//         fetch(`/api/plaid/transactions`, { method: 'POST', body: JSON.stringify({ accessToken: store[connectionName].access_token }) })
+//             .then(response => {
+//                 return response.json()
+//             }).then(responseJson => {
+//                 const { transactions }: { transactions: TransactionBase[] } = responseJson
+//                 const current = store[connectionName].transactions
+//                 if (current !== undefined && transactions.length > current.length) {
+//                     setStore(old => ({ ...old, [connectionName]: { ...old[connectionName], transactions: transactions } } as PlaidConnectionStore))
+//                 }
+//             })
+//     }
 
-    const getConnectionNameFromItemId = (itemId: string): string | undefined => {
-        for (const key of Object.keys(store)) {
-            if (store[key].item_id === itemId) {
-                return key
-            }
-        }
-        return undefined
-    }
+//     const getConnectionNameFromItemId = (itemId: string): string | undefined => {
+//         for (const key of Object.keys(store)) {
+//             if (store[key].item_id === itemId) {
+//                 return key
+//             }
+//         }
+//         return undefined
+//     }
 
-    useEffect(() => {
-        for (const key of Object.keys(store)) {
-            if (store[key].accounts === undefined)
-                loadAccounts(key)
+//     useEffect(() => {
+//         for (const key of Object.keys(store)) {
+//             if (store[key].accounts === undefined) {
+//                 loadAccounts(key)
+//             }
 
-            if (store[key].transactions) { clearInterval(store[key].transaction_refresh); continue }
-            if (store[key].transaction_refresh) { continue }
+//             console.log(key)
+//             console.log(store[key])
 
-            store[key].transaction_refresh = setInterval(async function () {
-                console.log('test')
-                loadTransactions(key)
-            }, 1000)
-        }
-    }, [store])
+//             if (store[key].transaction_refresh === undefined) {
+//                 console.log('creating new interval')
+//                 setStore(old => ({
+//                     ...old,
+//                     [key]: {
+//                         ...old[key],
+//                         transaction_refresh: setInterval(async function () {
+//                             console.log('test')
+//                             loadTransactions(key)
+//                         }, 5_000)
+//                     }
+//                 }));
+//             }
+//         }
 
-
-    const insert = (connectionName: string, connectionData: string, itemId: string) => {
-        setStore(old => ({ ...old, [connectionName]: { access_token: connectionData, item_id: itemId } }))
-        setConnectionId(connectionId + 1)
-        Cookies.set(connectionName, JSON.stringify({ accessToken: connectionData, itemId: itemId }))
-    }
-
-    const remove = (connectionName: string) => {
-        const { [connectionName]: data, ...newStore } = store
-        setStore(newStore)
-        Cookies.remove(connectionName)
-    }
-
-    const loadFromCookies = () => {
-        let maxId = 0
-        for (const key in Cookies.get()) {
-            const { accessToken, itemId } = JSON.parse(Cookies.get(key) as string)
-
-            // No data, ignore
-            if (!accessToken) continue
-
-            // handle connection ID collisions
-            const id = parseInt(accessToken?.substring(0, 'plaidConnection'.length) as string)
-            if (id > maxId) maxId = id
-            insert(key, accessToken, itemId)
-        }
-
-        setConnectionId(maxId)
-    }
-
-    return { store, insert, remove, loadFromCookies, connectionId, loadTransactions, getConnectionNameFromItemId }
-}
-
-type PlaidContextState = {
-    store: PlaidConnectionStore;
-    PlaidIconLink: ({ connectionName }: { connectionName: string }) => JSX.Element;
-    nextConnectionName: () => string;
-    accounts: AccountBase[],
-    transactions: TransactionBase[],
+//         return function () {
+//             for (const key of Object.keys(store)) {
+//                 console.log('cleanup')
+//                 console.log(key)
+//                 console.log(store[key])
+//                 if (store[key].transaction_refresh) {
+//                     console.log('here')
+//                     clearInterval(store[key].transaction_refresh);
+//                     setStore(old => ({ ...old, [key]: { ...old[key], transaction_refresh: undefined } }))
+//                 }
+//             }
+//         }
+//     }, [store])
 
 
-}
-const PlaidContext = React.createContext<PlaidContextState>({
-    store: {},
-    PlaidIconLink: ({ }: { connectionName: string }) => <></>,
-    nextConnectionName: () => '',
-    accounts: [],
-    transactions: [],
-});
+//     const insert = (connectionName: string, connectionData: string, itemId: string) => {
+//         setStore(old => ({ ...old, [connectionName]: { access_token: connectionData, item_id: itemId } }))
+//         setConnectionId(connectionId + 1)
+//         Cookies.set(connectionName, JSON.stringify({ accessToken: connectionData, itemId: itemId }))
+//     }
+
+//     const remove = (connectionName: string) => {
+//         const { [connectionName]: data, ...newStore } = store
+//         setStore(newStore)
+//         Cookies.remove(connectionName)
+//     }
+
+//     const loadFromCookies = () => {
+//         let maxId = 0
+//         for (const key in Cookies.get()) {
+//             const { accessToken, itemId } = JSON.parse(Cookies.get(key) as string)
+
+//             // No data, ignore
+//             if (!accessToken) continue
+
+//             // handle connection ID collisions
+//             const id = parseInt(accessToken?.substring(0, 'plaidConnection'.length) as string)
+//             if (id > maxId) maxId = id
+//             insert(key, accessToken, itemId)
+//         }
+
+//         setConnectionId(maxId)
+//     }
+
+//     return { store, insert, remove, loadFromCookies, connectionId, loadTransactions, getConnectionNameFromItemId }
+// }
+
+// type PlaidContextState = {
+//     store: PlaidConnectionStore;
+//     PlaidIconLink: ({ connectionName }: { connectionName: string }) => JSX.Element;
+//     nextConnectionName: () => string;
+//     accounts: AccountBase[],
+//     transactions: TransactionBase[],
 
 
-type PlaidProviderProps = {
-    children: React.ReactElement<CustomAppProps, CustomPage>
-}
-export const PlaidProvider = ({ children }: PlaidProviderProps) => {
-    const { store, insert, connectionId, loadTransactions, getConnectionNameFromItemId } = usePlaidConnectionStore()
-    const { linkToken, createLinkToken } = usePlaidLinkToken()
+// }
+// const PlaidContext = React.createContext<PlaidContextState>({
+//     store: {},
+//     PlaidIconLink: ({ }: { connectionName: string }) => <></>,
+//     nextConnectionName: () => '',
+//     accounts: [],
+//     transactions: [],
+// });
 
-    // "constructor"
-    useEffect(() => {
-        if (linkToken === null) {
-            createLinkToken()
-        }
-    }, [linkToken]);
 
-    const PlaidIconLink = ({ connectionName }: { connectionName: string }) => {
-        const onSuccess = React.useCallback<PlaidLinkOnSuccess>(
-            (public_token, metadata) => {
-                fetch(`/api/plaid/exchange_public_token/${public_token}`)
-                    .then(response => {
-                        return response.json()
-                    })
-                    .then(responseJson => {
-                        const { access_token, item_id } = responseJson
+// type PlaidProviderProps = {
+//     children: React.ReactElement<CustomAppProps, CustomPage>
+// }
+// export const PlaidProvider = ({ children }: PlaidProviderProps) => {
+//     const { store, insert, connectionId, loadTransactions, getConnectionNameFromItemId } = usePlaidConnectionStore()
+//     const { linkToken, createLinkToken } = usePlaidLinkToken()
 
-                        // we now have connection info, it can be saved
-                        insert(connectionName, access_token, item_id)
-                    })
-            },
-            []
-        );
+//     // "constructor"
+//     useEffect(() => {
+//         if (linkToken === null) {
+//             createLinkToken()
+//         }
+//     }, [linkToken]);
 
-        return (
-            <PlaidIcon connectionName={connectionName} token={linkToken !== null ? linkToken : ''} onSuccess={onSuccess} />
-        )
-    }
+//     const PlaidIconLink = ({ connectionName }: { connectionName: string }) => {
+//         const onSuccess = React.useCallback<PlaidLinkOnSuccess>(
+//             (public_token, metadata) => {
+//                 fetch(`/api/plaid/exchange_public_token/${public_token}`)
+//                     .then(response => {
+//                         return response.json()
+//                     })
+//                     .then(responseJson => {
+//                         const { access_token, item_id } = responseJson
 
-    const nextConnectionName = () => {
-        return `plaidConnection${connectionId.toString()}`
-    }
+//                         // we now have connection info, it can be saved
+//                         insert(connectionName, access_token, item_id)
+//                     })
+//             },
+//             []
+//         );
 
-    const accounts = () => {
-        let accountList: AccountBase[] = []
-        for (const connectionName of Object.keys(store)) {
-            const accounts = store[connectionName].accounts
-            if (accounts) {
-                for (const acc of accounts) {
-                    accountList.push(acc)
-                }
-            }
-        }
+//         return (
+//             <PlaidIcon connectionName={connectionName} token={linkToken !== null ? linkToken : ''} onSuccess={onSuccess} />
+//         )
+//     }
 
-        return accountList
-    }
+//     const nextConnectionName = () => {
+//         return `plaidConnection${connectionId.toString()}`
+//     }
 
-    const transactions = () => {
-        let transactionList: TransactionBase[] = []
-        for (const connectionName of Object.keys(store)) {
-            const transactions = store[connectionName].transactions
-            if (transactions) {
-                for (const trans of transactions) {
-                    transactionList.push(trans)
-                }
-            }
-        }
+//     const accounts = () => {
+//         let accountList: AccountBase[] = []
+//         for (const connectionName of Object.keys(store)) {
+//             const accounts = store[connectionName].accounts
+//             if (accounts) {
+//                 for (const acc of accounts) {
+//                     accountList.push(acc)
+//                 }
+//             }
+//         }
 
-        return transactionList
-    }
+//         return accountList
+//     }
 
-    return (
-        <PlaidContext.Provider value={{
-            store,
-            nextConnectionName,
-            PlaidIconLink,
-            accounts: accounts(),
-            transactions: transactions(),
-        }}>
-            {children}
-        </PlaidContext.Provider>
-    );
-};
+//     const transactions = () => {
+//         let transactionList: TransactionBase[] = []
+//         for (const connectionName of Object.keys(store)) {
+//             const transactions = store[connectionName].transactions
+//             if (transactions) {
+//                 for (const trans of transactions) {
+//                     transactionList.push(trans)
+//                 }
+//             }
+//         }
 
-export const usePlaid = () => useContext(PlaidContext);
+//         return transactionList
+//     }
+
+//     return (
+//         <PlaidContext.Provider value={{
+//             store,
+//             nextConnectionName,
+//             PlaidIconLink,
+//             accounts: accounts(),
+//             transactions: transactions(),
+//         }}>
+//             {children}
+//         </PlaidContext.Provider>
+//     );
+// };
+
+// export const usePlaid = () => useContext(PlaidContext);
 
 

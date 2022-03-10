@@ -1,18 +1,13 @@
-import { useState } from "react"
+import useSWR from "swr";
 
-type ReturnValue = {
-    linkToken: string | null;
-    createLinkToken(): Promise<void>;
-}
-
-export function usePlaidLinkToken(): ReturnValue {
-    const [linkToken, setLinkToken] = useState<string | null>(null)
-
-    async function createLinkToken() {
-        let response = await fetch("/api/plaid/create_link_token");
-        const { link_token } = await response.json();
-        setLinkToken(link_token);
+export function usePlaidLinkToken() {
+    async function createLinkToken(url: string) {
+        return fetch(url).then(response => response.json()).then(responseJson => responseJson.link_token)
     }
 
-    return { linkToken, createLinkToken }
+    const { data, error } = useSWR<string, any>("/api/plaid/create_link_token", createLinkToken)
+
+    if (error) console.log(error)
+
+    return { linkToken: data }
 }
