@@ -283,4 +283,15 @@ export class StatsEngine {
     public static totalTransactions(transactions: TransactionBase[]) {
         return transactions.length
     }
+
+    @StatsEngine.TransactionStat('largestTransaction')
+    public static largestTransaction(transactions: TransactionBase[]) {
+        let value = 0;
+        for (const transaction of transactions) {
+            if (transaction.amount > value) {
+                value = transaction.amount
+            }
+        }
+        return value
+    }
 }
