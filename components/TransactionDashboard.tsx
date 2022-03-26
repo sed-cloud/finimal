@@ -25,11 +25,25 @@ const TransactionDashboard = () => {
         }
     }
 
+    const onFilterAccount = (itemName: string) => {
+        const accountId = TransactionAttributeAPI.accounts.find((v) => v.name === itemName)?.account_id
+        if (!accountId) return
+        if (TransactionFilterAPI.accounts.includes(accountId)) {
+            TransactionFilterAPI.removeAccount(accountId)
+        } else {
+            TransactionFilterAPI.addAccount(accountId)
+        }
+    }
+
     return (
         <div className="p-6 shadow-lg rounded-lg bg-white overflow-y-auto">
             <div className="flex flex-row">
                 <h1 className='text-stone-900 font-["Poppins"] text-3xl font-extrabold italic flex-1'>transactions</h1>
                 <div className="flex flex-row gap-4">
+                    <MultiSelect text={'Filter by Accounts'} items={TransactionAttributeAPI.accounts.map((item) => {
+                        return { text: item.name, checked: TransactionFilterAPI.accounts.includes(item.account_id) }
+                    })} callback={onFilterAccount} />
+
                     <MultiSelect text={'Filter by Category'} items={TransactionAttributeAPI.categories.map((item) => {
                         return { text: item, checked: TransactionFilterAPI.categories.includes(item) }
                     })} callback={onFilterCategory} />

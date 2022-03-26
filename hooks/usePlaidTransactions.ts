@@ -1,10 +1,11 @@
 import useSWR from "swr"
-import { Transaction } from "plaid"
+import { AccountBase, Transaction } from "plaid"
 import { useTransactionInsights } from "./useInsights"
 import { useMerchantFilter } from "./useMerchantFilter"
 import { useMerchants } from "./useMerchants"
 import { useCategories } from "./useCategories"
 import { useCategoryFilter } from "./useCategoryFilter"
+import { useAccountFilter } from "./useAccountFilter"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -27,9 +28,9 @@ async function loadTransactions(url: string, accessTokens: string[]): Promise<Tr
     })
 }
 
-export const usePlaidTransactions = (accessTokens: string[]) => {
+export const usePlaidTransactions = (accessTokens: string[], allAccounts: AccountBase[]) => {
     const { data } = useSWR([`/api/plaid/transactions/`, accessTokens], loadTransactions, { refreshInterval: 5_000 })
-    
+
     const { merchants: allMerchants } = useMerchants(data)
     const { categories: allCategories } = useCategories(data)
 
@@ -48,12 +49,21 @@ export const usePlaidTransactions = (accessTokens: string[]) => {
         dataFilteredByCategory,
         categories: filteredCategories
     } = useCategoryFilter(dataFilteredByMerchant, allCategories)
-    
-    const { insights } = useTransactionInsights(dataFilteredByCategory)
+
+    const {
+        addAccount,
+        removeAccount,
+        resetAccount,
+        dataFilteredByAccountId,
+        accounts: filteredAccounts
+    } = useAccountFilter(dataFilteredByCategory, allAccounts ? allAccounts.map(value => value.account_id) : [])
+
+    const { insights } = useTransactionInsights(dataFilteredByAccountId)
 
     const TransactionAttributeAPI = {
         merchants: allMerchants,
-        categories: allCategories
+        categories: allCategories,
+        accounts: allAccounts
     }
 
     const TransactionFilterAPI = {
@@ -66,11 +76,17 @@ export const usePlaidTransactions = (accessTokens: string[]) => {
         removeCategory,
         resetCategory,
         dataFilteredByCategory,
-        categories: filteredCategories
+        categories: filteredCategories,
+
+        addAccount,
+        removeAccount,
+        resetAccount,
+        dataFilteredByAccountId,
+        accounts: filteredAccounts
     }
 
     return {
-        transactions: dataFilteredByCategory,
+        transactions: dataFilteredByAccountId,
         transactionsInsights: insights,
         TransactionAttributeAPI,
         TransactionFilterAPI

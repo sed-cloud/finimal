@@ -8,7 +8,6 @@ type MultiSelectProps = {
 }
 
 const MultiSelect = ({ text, items, callback }: MultiSelectProps) => {
-    console.log(items)
     return (
         <div className="dropdown ">
             <button tabIndex={0} className="
