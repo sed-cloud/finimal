@@ -1,5 +1,8 @@
+import { MouseEventHandler } from "react";
 import { usePlaidAPI } from "../hooks/usePlaidAPI";
 import { camelToTitle } from "../lib/textLib";
+import { TimeRange, TimeRangeEnum } from "../lib/timeLib";
+import ButtonGroup from "./ButtonGroup";
 import { Field } from "./Field";
 import MultiSelect from "./MultiSelect";
 import TransactionCard from "./TransactionCard";
@@ -35,11 +38,21 @@ const TransactionDashboard = () => {
         }
     }
 
+    const onChangeTimeRange: MouseEventHandler<HTMLButtonElement> = (event) => {
+        TransactionFilterAPI.setTimeRange(event.currentTarget.dataset.value as TimeRangeEnum)
+    }
+
     return (
         <div className="p-6 shadow-lg rounded-lg bg-white overflow-y-auto">
             <div className="flex flex-row">
                 <h1 className='text-stone-900 font-["Poppins"] text-3xl font-extrabold italic flex-1'>transactions</h1>
                 <div className="flex flex-row gap-4">
+                    <ButtonGroup
+                        selected={TransactionFilterAPI.timeRange}
+                        items={Object.keys(TimeRange).filter(k => k !== 'none')}
+                        callback={onChangeTimeRange}
+                    />
+
                     <MultiSelect text={'Filter by Accounts'} items={TransactionAttributeAPI.accounts.map((item) => {
                         return { text: item.name, checked: TransactionFilterAPI.accounts.includes(item.account_id) }
                     })} callback={onFilterAccount} />
@@ -72,7 +85,7 @@ const TransactionDashboard = () => {
                 <h1>No Recorded Transactions</h1>
             }
 
-            <div className={`grid grid-cols-2`}>
+            <div className={`grid grid-cols-2 min-h-[12rem]`}>
                 {transactions?.map((transaction, index) => {
                     return <TransactionCard key={index} transaction={transaction} />
                 })}

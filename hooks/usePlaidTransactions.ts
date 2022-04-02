@@ -6,6 +6,7 @@ import { useMerchants } from "./useMerchants"
 import { useCategories } from "./useCategories"
 import { useCategoryFilter } from "./useCategoryFilter"
 import { useAccountFilter } from "./useAccountFilter"
+import { useTimeRangeFilter } from "./useTimeRangeFilter"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -58,7 +59,14 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         accounts: filteredAccounts
     } = useAccountFilter(dataFilteredByCategory, allAccounts ? allAccounts.map(value => value.account_id) : [])
 
-    const { insights } = useTransactionInsights(dataFilteredByAccountId)
+    const {
+        setTimeRange,
+        resetTimeRange,
+        dataFilteredByTimeRange,
+        timeRange
+    } = useTimeRangeFilter(dataFilteredByAccountId)
+
+    const { insights } = useTransactionInsights(dataFilteredByTimeRange)
 
     const TransactionAttributeAPI = {
         merchants: allMerchants,
@@ -82,11 +90,16 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         removeAccount,
         resetAccount,
         dataFilteredByAccountId,
-        accounts: filteredAccounts
+        accounts: filteredAccounts,
+
+        setTimeRange,
+        resetTimeRange,
+        dataFilteredByTimeRange,
+        timeRange
     }
 
     return {
-        transactions: dataFilteredByAccountId,
+        transactions: dataFilteredByTimeRange,
         transactionsInsights: insights,
         TransactionAttributeAPI,
         TransactionFilterAPI
