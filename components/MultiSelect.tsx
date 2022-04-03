@@ -1,3 +1,32 @@
+type MultiSelectContentProps = {
+    items: {
+        checked: boolean
+        text: string
+    }[]
+    callback: (itemName: string) => void;
+}
+const MultiSelectContent = ({ items, callback }: MultiSelectContentProps) => {
+    return (<div tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg w-48 max-h-64 overflow-y-auto scrollbar">
+        {items.map((item, index) => {
+            return (<button
+                className="
+                        flex-1
+                        grid
+                        grid-cols-[2rem_1fr]
+                        justify-items-start
+                        p-2
+                        cursor-pointer
+                        rounded-xl
+                        hover:bg-stone-200"
+                key={index} onClick={() => callback(item.text)}>
+                <input type="checkbox" checked={item.checked} className="checkbox" />
+                <span className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{item.text}</span>
+            </button>)
+        })}
+    </div>)
+}
+
+
 type MultiSelectProps = {
     text: string
     items: {
@@ -28,24 +57,7 @@ const MultiSelect = ({ text, items, callback }: MultiSelectProps) => {
                 hover:bg-stone-600
                 hover:text-red-50
             ">{text}</button>
-            <div tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg w-48 max-h-64 overflow-y-auto scrollbar">
-                {items.map((item, index) => {
-                    return (<button
-                        className="
-                        flex-1
-                        grid
-                        grid-cols-[2rem_1fr]
-                        justify-items-start
-                        p-2
-                        cursor-pointer
-                        rounded-xl
-                        hover:bg-stone-200"
-                        key={index} onClick={() => callback(item.text)}>
-                        <input type="checkbox" checked={item.checked} className="checkbox" />
-                        <span className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{item.text}</span>
-                    </button>)
-                })}
-            </div>
+            
         </div>
     )
 }
@@ -67,27 +79,10 @@ const MultiSelectTableHeader = ({ text, items, callback }: MultiSelectProps) => 
 
                 hover:bg-stone-200
             ">{text}</button>
-            <div tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg w-48 max-h-64 overflow-y-auto scrollbar">
-                {items.map((item, index) => {
-                    return (<button
-                        className="
-                        flex-1
-                        grid
-                        grid-cols-[2rem_1fr]
-                        justify-items-start
-                        p-2
-                        cursor-pointer
-                        rounded-xl
-                        hover:bg-stone-200"
-                        key={index} onClick={() => callback(item.text)}>
-                        <input type="checkbox" checked={item.checked} className="checkbox" />
-                        <span className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{item.text}</span>
-                    </button>)
-                })}
-            </div>
+            <MultiSelectContent items={items} callback={callback} />
         </div>
     )
 };
 
-export { MultiSelectTableHeader } 
+export {MultiSelectContent, MultiSelectTableHeader } 
 export default MultiSelect;

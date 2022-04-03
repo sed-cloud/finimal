@@ -5,7 +5,6 @@ function filterTransactionsByMerchantName(transactions: Transaction[] | undefine
     if (merchants.length === 0 || !transactions) {
         return transactions
     }
-    console.log(merchants)
     const list = []
 
     for (const transaction of transactions) {

@@ -6,6 +6,7 @@
 import { Transaction } from "plaid"
 import { usePlaidAPI } from "../../hooks/usePlaidAPI"
 import { ColorManager } from "../../lib/colorManager"
+import FilterIcon from "../FilterIcon"
 import MultiSelect, { MultiSelectTableHeader } from "../MultiSelect"
 
 type TransactionExplorerProps = {
@@ -30,6 +31,13 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
             TransactionFilterAPI.addAccount(accountId)
         }
     }
+    const onFilterPaymentTypes = (itemName: string) => {
+        if (TransactionFilterAPI.paymentTypes.includes(itemName)) {
+            TransactionFilterAPI.removePaymentType(itemName)
+        } else {
+            TransactionFilterAPI.addPaymentType(itemName)
+        }
+    }
     return (
         <div className="overflow-y-scroll bg-white rounded-xl shadow-lg p-4 max-h-page scrollbar">
             <table className="table table-compact w-full">
@@ -39,14 +47,52 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
                         <th className="bg-white">Name</th>
                         <th className="bg-white">Amount</th>
                         <th className="bg-white">Date</th>
-                        <th className="bg-white"><MultiSelectTableHeader text={'Merchant'} items={TransactionAttributeAPI.merchants.map((item) => {
-                            return { text: item, checked: TransactionFilterAPI.merchants.includes(item) }
-                        })} callback={onFilterMerchant} /></th>
-                        <th className="bg-white">Payment Type</th>
+                        <th className="bg-white">
+                            <MultiSelectTableHeader
+                                text={'Merchant'}
+                                items={TransactionAttributeAPI.merchants.map((item) => {
+                                    return {
+                                        text: item,
+                                        checked: TransactionFilterAPI.merchants.includes(item)
+                                    }
+                                })}
+                                callback={onFilterMerchant}
+                            />
+                        </th>
+                        <th className="bg-white flex flex-row justify-between place-items-center">
+                            <div className=" 
+                            font-['Poppins']
+                            font-bold
+                            rounded-md
+
+                            px-1
+                            py-1
+                            capitalize
+                            "
+                            >Payment Type</div>
+                            <FilterIcon 
+                            items={TransactionAttributeAPI.paymentTypes.map(item => {
+                                return {
+                                    text: item,
+                                    checked: TransactionFilterAPI.paymentTypes.includes(item)
+                                }
+                            })}
+                                callback={onFilterPaymentTypes}
+                            />
+                        </th>
                         <th className="bg-white">Categories</th>
-                        <th className="bg-white"><MultiSelectTableHeader text={'Account'} items={TransactionAttributeAPI.accounts.map((item) => {
-                            return { text: item.name, checked: TransactionFilterAPI.accounts.includes(item.account_id) }
-                        })} callback={onFilterAccount} /></th>
+                        <th className="bg-white">
+                            <MultiSelectTableHeader
+                                text={'Account'}
+                                items={TransactionAttributeAPI.accounts.map((item) => {
+                                    return {
+                                        text: item.name,
+                                        checked: TransactionFilterAPI.accounts.includes(item.account_id)
+                                    }
+                                })}
+                                callback={onFilterAccount}
+                            />
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

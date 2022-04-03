@@ -7,6 +7,8 @@ import { useCategories } from "./useCategories"
 import { useCategoryFilter } from "./useCategoryFilter"
 import { useAccountFilter } from "./useAccountFilter"
 import { useTimeRangeFilter } from "./useTimeRangeFilter"
+import { usePaymentTypes } from "./usePaymentType"
+import { usePaymentTypesFilter } from "./usePaymentTypesFilter"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -34,6 +36,7 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
 
     const { merchants: allMerchants } = useMerchants(data)
     const { categories: allCategories } = useCategories(data)
+    const { paymentTypes: allPaymentTypes } = usePaymentTypes(data)
 
     const {
         addMerchant,
@@ -66,11 +69,20 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         timeRange
     } = useTimeRangeFilter(dataFilteredByAccountId)
 
+    const {
+        addPaymentType,
+        removePaymentType,
+        resetPaymentTypes,
+        dataFilteredByPaymentType,
+        paymentTypes: filteredPaymentTypes
+    } = usePaymentTypesFilter(dataFilteredByTimeRange, allPaymentTypes)
+
     const { insights } = useTransactionInsights(dataFilteredByTimeRange)
 
     const TransactionAttributeAPI = {
         merchants: allMerchants,
         categories: allCategories,
+        paymentTypes: allPaymentTypes,
         accounts: allAccounts
     }
 
@@ -95,13 +107,20 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         setTimeRange,
         resetTimeRange,
         dataFilteredByTimeRange,
-        timeRange
+        timeRange,
+
+        addPaymentType,
+        removePaymentType,
+        resetPaymentTypes,
+        dataFilteredByPaymentType,
+        paymentTypes: filteredPaymentTypes
     }
 
     return {
-        transactions: dataFilteredByTimeRange,
+        transactions: dataFilteredByPaymentType,
         transactionsInsights: insights,
         TransactionAttributeAPI,
         TransactionFilterAPI
     }
 }
+

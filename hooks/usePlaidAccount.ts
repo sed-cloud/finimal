@@ -16,7 +16,7 @@ function accountIdToName(accountId: string, accounts: AccountBase[]) {
 }
 
 function accountIdToType(accountId: string, accounts: AccountBase[]) {
-    return accounts.filter(a => a.account_id === accountId)[0].type
+    return accounts.filter(a => a.account_id === accountId)[0]?.type
 }
 
 export const usePlaidAccounts = (accessTokens: string[]) => {
