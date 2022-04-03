@@ -5,7 +5,7 @@ import { usePlaidTransactions } from "./usePlaidTransactions"
 
 export const usePlaidAPI = () => {
     const { accessTokens } = usePlaidAccessTokenStore()
-    const { accounts, insights: accountsInsights } = usePlaidAccounts(accessTokens)
+    const { accounts, insights: accountsInsights, AccountUtility } = usePlaidAccounts(accessTokens)
     const {
         transactions,
         transactionsInsights,
@@ -15,6 +15,7 @@ export const usePlaidAPI = () => {
     return {
         accounts,
         accountsInsights,
+        AccountUtility,
         transactions,
         transactionsInsights,
         TransactionAttributeAPI,

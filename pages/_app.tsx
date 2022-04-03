@@ -2,7 +2,6 @@ import '../styles/globals.css'
 import { AuthProvider } from '../contexts/auth';
 import Head from 'next/head';
 import { CustomAppProps } from '../lib/custom-page';
-// import { PlaidProvider } from '../contexts/plaid';
 import { NotificationProvider } from '../contexts/notification';
 import { PlaidProvider } from '../contexts/plaid/context';
 
