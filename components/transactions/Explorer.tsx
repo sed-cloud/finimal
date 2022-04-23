@@ -5,6 +5,8 @@
 
 import { usePlaidAPI } from "../../hooks/usePlaidAPI"
 import { ColorManager } from "../../lib/colorManager"
+import { TimeRangeEnum } from "../../lib/timeLib"
+import FilterSortTableHeader from "../table/FilterSortTableHeader"
 import FilterTableHeader from "../table/FilterTableHeader"
 import SortTableHeader from "../table/SortTableHeader"
 
@@ -45,6 +47,10 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
         }
     }
 
+    const onTimeRangeFiltered = (itemName: string) => {
+        TransactionFilterAPI.setTimeRange(itemName as TimeRangeEnum)
+    }
+
     const onAmountSorted = () => {
         if (TransactionSortAPI.amountSortType === 'none') {
             TransactionSortAPI.sortAmountAscending()
@@ -77,7 +83,14 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
                             <SortTableHeader text='Amount' sortType={TransactionSortAPI.amountSortType} callback={onAmountSorted} />
                         </th>
                         <th className="bg-white">
-                            <SortTableHeader text='Date' sortType={TransactionSortAPI.dateSortType} callback={onDateSorted} />
+                            <FilterSortTableHeader
+                                text='Date'
+                                items={TransactionAttributeAPI.timeRanges}
+                                checkedItems={[TransactionFilterAPI.timeRange]}
+                                sortType={TransactionSortAPI.dateSortType}
+                                sortCallback={onDateSorted}
+                                filterCallback={onTimeRangeFiltered}
+                            />
                         </th>
                         <th className='bg-white'>
                             <FilterTableHeader

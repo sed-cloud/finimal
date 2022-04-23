@@ -11,6 +11,7 @@ import { usePaymentTypes } from "./usePaymentType"
 import { usePaymentTypesFilter } from "./usePaymentTypesFilter"
 import { useAmountSort } from "./useAmountSort"
 import { useDateSort } from "./useDateSort"
+import { TimeRange } from '../lib/timeLib'
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -101,6 +102,7 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         merchants: allMerchants,
         categories: allCategories,
         paymentTypes: allPaymentTypes,
+        timeRanges: Object.keys(TimeRange).filter(x => x !== 'none'),
         accounts: allAccounts
     }
 
