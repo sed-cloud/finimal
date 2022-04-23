@@ -10,7 +10,8 @@ export const usePlaidAPI = () => {
         transactions,
         transactionsInsights,
         TransactionAttributeAPI,
-        TransactionFilterAPI
+        TransactionFilterAPI,
+        TransactionSortAPI
     } = usePlaidTransactions(accessTokens, accounts ? accounts : [])
     return {
         accounts,
@@ -19,7 +20,8 @@ export const usePlaidAPI = () => {
         transactions,
         transactionsInsights,
         TransactionAttributeAPI,
-        TransactionFilterAPI
+        TransactionFilterAPI,
+        TransactionSortAPI
     }
 
 }

@@ -1,6 +1,6 @@
 import { faFilter } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { MultiSelectContent } from "./MultiSelect"
+import { MultiSelectContent } from "../MultiSelect"
 
 type FitlerIconProps = {
     items: {

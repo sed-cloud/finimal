@@ -3,17 +3,16 @@
  * 
  */
 
-import { Transaction } from "plaid"
 import { usePlaidAPI } from "../../hooks/usePlaidAPI"
 import { ColorManager } from "../../lib/colorManager"
-import FilterIcon from "../FilterIcon"
-import MultiSelect, { MultiSelectTableHeader } from "../MultiSelect"
+import FilterTableHeader from "../table/FilterTableHeader"
+import SortTableHeader from "../table/SortTableHeader"
 
 type TransactionExplorerProps = {
 }
 
 const TransactionExplorer = ({ }: TransactionExplorerProps) => {
-    const { transactions, TransactionAttributeAPI, TransactionFilterAPI, AccountUtility } = usePlaidAPI()
+    const { transactions, TransactionAttributeAPI, TransactionFilterAPI, TransactionSortAPI, AccountUtility } = usePlaidAPI()
     const onFilterMerchant = (itemName: string) => {
         // item is filtered
         if (TransactionFilterAPI.merchants.includes(itemName)) {
@@ -38,6 +37,35 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
             TransactionFilterAPI.addPaymentType(itemName)
         }
     }
+    const onFilterCategory = (itemName: string) => {
+        if (TransactionFilterAPI.categories.includes(itemName)) {
+            TransactionFilterAPI.removeCategory(itemName)
+        } else {
+            TransactionFilterAPI.addCategory(itemName)
+        }
+    }
+
+    const onAmountSorted = () => {
+        if (TransactionSortAPI.amountSortType === 'none') {
+            TransactionSortAPI.sortAmountAscending()
+        } else if (TransactionSortAPI.amountSortType === 'ascending') {
+            TransactionSortAPI.sortAmountDescending()
+        } else {
+            TransactionSortAPI.removeAmountSorting()
+        }
+
+    }
+
+    const onDateSorted = () => {
+        if (TransactionSortAPI.dateSortType === 'none') {
+            TransactionSortAPI.sortDateAscending()
+        } else if (TransactionSortAPI.dateSortType === 'ascending') {
+            TransactionSortAPI.sortDateDescending()
+        } else {
+            TransactionSortAPI.removeDateSorting()
+        }
+    }
+
     return (
         <div className="overflow-y-scroll bg-white rounded-xl shadow-lg p-4 max-h-page scrollbar">
             <table className="table table-compact w-full">
@@ -45,51 +73,42 @@ const TransactionExplorer = ({ }: TransactionExplorerProps) => {
                     <tr>
                         <th className="bg-white"></th>
                         <th className="bg-white">Name</th>
-                        <th className="bg-white">Amount</th>
-                        <th className="bg-white">Date</th>
                         <th className="bg-white">
-                            <MultiSelectTableHeader
-                                text={'Merchant'}
-                                items={TransactionAttributeAPI.merchants.map((item) => {
-                                    return {
-                                        text: item,
-                                        checked: TransactionFilterAPI.merchants.includes(item)
-                                    }
-                                })}
+                            <SortTableHeader text='Amount' sortType={TransactionSortAPI.amountSortType} callback={onAmountSorted} />
+                        </th>
+                        <th className="bg-white">
+                            <SortTableHeader text='Date' sortType={TransactionSortAPI.dateSortType} callback={onDateSorted} />
+                        </th>
+                        <th className='bg-white'>
+                            <FilterTableHeader
+                                text='Merchants'
+                                items={TransactionAttributeAPI.merchants}
+                                checkedItems={TransactionFilterAPI.merchants}
                                 callback={onFilterMerchant}
                             />
                         </th>
-                        <th className="bg-white flex flex-row justify-between place-items-center">
-                            <div className=" 
-                            font-['Poppins']
-                            font-bold
-                            rounded-md
+                        <th className='bg-white'>
 
-                            px-1
-                            py-1
-                            capitalize
-                            "
-                            >Payment Type</div>
-                            <FilterIcon 
-                            items={TransactionAttributeAPI.paymentTypes.map(item => {
-                                return {
-                                    text: item,
-                                    checked: TransactionFilterAPI.paymentTypes.includes(item)
-                                }
-                            })}
+                            <FilterTableHeader
+                                text='Payment Types'
+                                items={TransactionAttributeAPI.paymentTypes}
+                                checkedItems={TransactionFilterAPI.paymentTypes}
                                 callback={onFilterPaymentTypes}
                             />
                         </th>
-                        <th className="bg-white">Categories</th>
                         <th className="bg-white">
-                            <MultiSelectTableHeader
-                                text={'Account'}
-                                items={TransactionAttributeAPI.accounts.map((item) => {
-                                    return {
-                                        text: item.name,
-                                        checked: TransactionFilterAPI.accounts.includes(item.account_id)
-                                    }
-                                })}
+                            <FilterTableHeader
+                                text='Categories'
+                                items={TransactionAttributeAPI.categories}
+                                checkedItems={TransactionFilterAPI.categories}
+                                callback={onFilterCategory}
+                            />
+                        </th>
+                        <th className='bg-white'>
+                            <FilterTableHeader
+                                text='Account'
+                                items={TransactionAttributeAPI.accounts.map(item => item.name)}
+                                checkedItems={TransactionFilterAPI.accounts}
                                 callback={onFilterAccount}
                             />
                         </th>

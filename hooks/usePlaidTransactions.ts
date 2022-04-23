@@ -9,6 +9,8 @@ import { useAccountFilter } from "./useAccountFilter"
 import { useTimeRangeFilter } from "./useTimeRangeFilter"
 import { usePaymentTypes } from "./usePaymentType"
 import { usePaymentTypesFilter } from "./usePaymentTypesFilter"
+import { useAmountSort } from "./useAmountSort"
+import { useDateSort } from "./useDateSort"
 
 
 async function loadTransactions(url: string, accessTokens: string[]): Promise<Transaction[]> {
@@ -77,7 +79,23 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         paymentTypes: filteredPaymentTypes
     } = usePaymentTypesFilter(dataFilteredByTimeRange, allPaymentTypes)
 
-    const { insights } = useTransactionInsights(dataFilteredByTimeRange)
+    const {
+        sortAmountAscending,
+        sortAmountDescending,
+        removeAmountSorting,
+        dataSortedByAmount,
+        sortType: amountSortType
+    } = useAmountSort(dataFilteredByPaymentType)
+
+    const {
+        sortDateAscending,
+        sortDateDescending,
+        removeDateSorting,
+        dataSortedByDate,
+        sortType: dateSortType
+    } = useDateSort(dataSortedByAmount)
+
+    const { insights } = useTransactionInsights(dataSortedByDate)
 
     const TransactionAttributeAPI = {
         merchants: allMerchants,
@@ -116,11 +134,27 @@ export const usePlaidTransactions = (accessTokens: string[], allAccounts: Accoun
         paymentTypes: filteredPaymentTypes
     }
 
+    const TransactionSortAPI = {
+        sortAmountAscending,
+        sortAmountDescending,
+        removeAmountSorting,
+        dataSortedByAmount,
+        amountSortType,
+
+        sortDateAscending,
+        sortDateDescending,
+        removeDateSorting,
+        dataSortedByDate,
+        dateSortType
+
+    }
+
     return {
-        transactions: dataFilteredByPaymentType,
+        transactions: dataSortedByDate,
         transactionsInsights: insights,
         TransactionAttributeAPI,
-        TransactionFilterAPI
+        TransactionFilterAPI,
+        TransactionSortAPI
     }
 }
 
